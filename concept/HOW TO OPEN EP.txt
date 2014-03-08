@@ -1,0 +1,13 @@
+The .EP file is a Pencil sketch.
+You can get pencil @ http://pencil.evolus.vn/
+http://en.wikipedia.org/wiki/Pencil_Project
+Or from here as a firefox addon:
+https://addons.mozilla.org/de/firefox/addon/pencil/
+
+I also saved it as a crappy png file.
+
+
+This is a rough sketch on how things work, but should be moved to into document later.
+I hope to create an RFC from it later, but maybe iam not the right guy to do this and
+i would have no idea where to start.
+

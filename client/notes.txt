@@ -1,0 +1,6 @@
+install karma globally via npm.. required to run tests, because of awesome.
+npm install -g karma
+npm install -g karma-qunit
+
+Cross Window post message.. if need be:
+http://javascript.info/tutorial/cross-window-messaging-with-postmessage

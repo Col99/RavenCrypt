@@ -1,0 +1,58 @@
+{
+  "name": "RavenCrypt",
+  "version": "0.1.0",
+  "authors": [
+    "887 <2300887@gmail.com>"
+  ],
+  "description": "RavenCrypt Perfect Forward Secrecy Service!",
+  "main": "index.html",
+  "keywords": [
+    "pfs",
+    "pgp",
+    "im",
+    "instant_messanger",
+    "chat",
+    "messaging",
+    "communication",
+    "social",
+    "social_network",
+    "group",
+    "group_chat",
+    "crypto",
+    "encryption",
+    "decryption",
+    "secrecy",
+    "perfect",
+    "forward",
+    "secrecy",
+    "perfect_forward_secrecy",
+    "html5",
+    "javascript",
+    "nodejs",
+    "browser",
+    "addon"
+  ],
+  "license": "LGPL-2.1",
+  "homepage": "ravencrypt.org",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+	"jquery": "*",
+	"bootstrap": "*",
+    "socket.io-client": "*",
+	"node-uuid": "*",
+	"font-awesome": "*",
+    "angular": "*",
+    "ydn-db": "*",
+    "angular-ui-bootstrap-bower": "*",
+    "angular-ui-router": "*",
+    "angular-mocks": "*",
+	"angular-translate": "*",
+    "angular-translate-loader-static-files": "*"
+  }
+}

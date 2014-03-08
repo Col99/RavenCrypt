@@ -1,0 +1,81 @@
+{
+ "enable_e10s": false, 
+ "is-sdk-bundled": true, 
+ "jetpackID": "RavenCrypt@jetpack", 
+ "loader": "addon-sdk/lib/sdk/loader/cuddlefish.js", 
+ "main": "main", 
+ "mainPath": "ravencrypt/main", 
+ "manifest": {
+  "ravencrypt/listen": {
+   "docsSHA256": null, 
+   "jsSHA256": "b43bfe26ae2c7a56ea06ee001e70a835b805cdd8112cec02359f7185e103c065", 
+   "moduleName": "listen", 
+   "packageName": "ravencrypt", 
+   "requirements": {
+    "unload+": "ravencrypt/unload+"
+   }, 
+   "sectionName": "lib"
+  }, 
+  "ravencrypt/main": {
+   "docsSHA256": null, 
+   "jsSHA256": "1bd24eef91b6a01c5cc83a7787985236e988abe700a2b8d67c780f804c18fc66", 
+   "moduleName": "main", 
+   "packageName": "ravencrypt", 
+   "requirements": {
+    "chrome": "chrome", 
+    "self": "sdk/self", 
+    "tabs": "sdk/tabs", 
+    "toolbarbutton": "ravencrypt/toolbarbutton"
+   }, 
+   "sectionName": "lib"
+  }, 
+  "ravencrypt/toolbarbutton": {
+   "docsSHA256": null, 
+   "jsSHA256": "2b1e7039f52b425967c59e3d85d8e688e85ce7259cb50f91db66a71426c050ae", 
+   "moduleName": "toolbarbutton", 
+   "packageName": "ravencrypt", 
+   "requirements": {
+    "listen": "ravencrypt/listen", 
+    "unload+": "ravencrypt/unload+", 
+    "window-utils": "sdk/deprecated/window-utils"
+   }, 
+   "sectionName": "lib"
+  }, 
+  "ravencrypt/unload+": {
+   "docsSHA256": null, 
+   "jsSHA256": "1620efec6f5712e5b9170b978a4d9b104985a2c47c936ecae829c0ee784aaf7d", 
+   "moduleName": "unload+", 
+   "packageName": "ravencrypt", 
+   "requirements": {
+    "unload": "sdk/system/unload"
+   }, 
+   "sectionName": "lib"
+  }
+ }, 
+ "metadata": {
+  "addon-sdk": {
+   "description": "Add-on development made easy.", 
+   "keywords": [
+    "javascript", 
+    "engine", 
+    "addon", 
+    "extension", 
+    "xulrunner", 
+    "firefox", 
+    "browser"
+   ], 
+   "license": "AGPLv3", 
+   "name": "addon-sdk"
+  }, 
+  "ravencrypt": {
+   "author": "887", 
+   "main": "main", 
+   "name": "ravencrypt", 
+   "version": "0.1.0"
+  }
+ }, 
+ "name": "ravencrypt", 
+ "sdkVersion": "1.14", 
+ "staticArgs": {}, 
+ "verbose": false
+}

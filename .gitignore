@@ -1,0 +1,37 @@
+#Jet brains
+.idea
+
+#src
+/client/dist/firefox/resources/ravencrypt/data/files/
+/client/dist/chrome/data/
+
+#deploy
+/deploy/*/
+
+#nodejs modules / bower modules
+/server/node_modules/*
+/client/vendor
+
+#special node-toobusy version from STRML which is JS only. Thanks!
+!/server/node_modules/node-toobusy-js
+
+#Sqlite devDB
+/server/RavenCrypt.sqlite
+/server/RavenCryptTest.sqlite
+
+#npm spam
+/server/npm-debug.log
+/npm-debug.log
+
+#Sqlite devDB
+/server/files/*/*
+
+#logs and analytics
+/server/logs/
+/server/analytics.json
+
+#weired unnecessary openpgp keyring config file that creates itself when calling opnenpgp.init().. shouldn't happen anymore but nerveless
+/config
+
+#macos filesystem metafiles
+/*.DS_Store

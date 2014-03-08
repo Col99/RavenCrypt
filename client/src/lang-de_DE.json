@@ -1,0 +1,12 @@
+{
+    "ACCOUNTS": "Benutzerkonten",
+    "LOGIN": "Anmelden",
+    "REGISTER": "Registrieren",
+    "USER_NAME": "Benutzer Name",
+    "SERVER": "Server",
+    "REGISTER_STEP_1": "Schritt 1 - Namen auswählen",
+    "REGISTER_STEP_2": "Schritt 2 - Algorithmus wählen",
+    "REGISTER_STEP_3": "Schritt 3 - Schlüssel generieren",
+    "REGISTER_STEP_4": "Schritt 4 - Auf Server registrieren"
+
+}

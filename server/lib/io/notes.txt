@@ -1,0 +1,17 @@
+//use handshake data;
+//.on('connection', function (socket) {
+//    console.dir(socket.handshake.foo);
+//});
+
+//https://github.com/LearnBoost/socket.io/wiki/Rooms
+//we let our users join "rooms" for themselves. that way we can just send a message to a room and
+//send it to all clients connected to that room/as that user.. meaning the users mobile, his laptop etc. =)
+//socket.join('room')
+//socket.leave('room')
+
+//storing data to the socket
+//socket.set('nickname', name, function () {
+//    socket.emit('ready');
+//});
+
+

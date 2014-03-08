@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html ng-app="RavenCrypt">
+<head>
+    <meta charset="utf-8">
+
+    <title>RavenCrypt</title>
+
+    <!--first let bootstrap clean everything and bring our workspace in shape-->
+    <link rel="stylesheet" href="lib/bootstrap3/css/bootstrap.css">
+    <!--then apply our own stylesheet on top of bootstrap-->
+    <link rel="stylesheet" href="assets/css/rc.css">
+    <link rel="stylesheet" href="assets/css/index.css">
+</head>
+<body>
+
+<!--bootstrap form builder:  http://bootsnipp.com/forms-->
+
+<div ui-view></div>
+
+<!--we need to put our massive JS at the bottom so there is less visible "lag" for our users (he sees the background color faster)-->
+<!--dependencies-->
+<script src="lib/jquery/jquery.js"></script>
+<script src="lib/socket.io-client/socket.io.js"></script>
+<script src="lib/node-uuid/uuid.js"></script>
+
+<!--crypto-->
+<script src='../src/crypto/openpgpjs/openpgp.min.js'></script>
+<!--<script src="../src/crypto/jsonc/jsonc.js"></script>-->
+<script src='../src/crypto/lz-string/lz-string.js'></script>
+<script src='../src/crypto/RavenCrypt/RavenCrypt.js'></script>
+
+<!--framework-->
+<script src="lib/angular/angular.js"></script>
+<script src="lib/angular-ui-router/angular-ui-router.js"></script>
+<script src="lib/bootstrap3/js/bootstrap.js"></script>
+<script src="lib/angular-translate/angular-translate.js"></script>
+<script src="lib/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
+
+<script src="js/indexeddb-stroarge.js"></script>
+
+<script src="lib/fastclick/fastclick.js"></script>
+
+<!--app-->
+<script src="js/app.js"></script>
+
+<!--controller-->
+<script src="js/login/login.js"></script>
+<script src="js/register/register.js"></script>
+<script src="js/main.js"></script>
+
+
+</body>
+</html>

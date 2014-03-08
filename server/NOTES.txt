@@ -1,0 +1,130 @@
+//tuts:
+//nodeJs for beginners.. we need to do EVERYTHING
+//http://net.tutsplus.com/tutorials/javascript-ajax/node-js-for-beginners/
+
+//offical nodejs dev guide 
+//http://nodemanual.org/latest/nodejs_dev_guide/reading_and_writing_files.html
+
+//express
+//http://expressjs.com/api.html
+
+//nodeJs express rest server (basics, for people with 0 knowlegde)
+//http://blog.modulus.io/nodejs-and-express-create-rest-api
+
+//clustering
+http://nodejs.org/docs/latest/api/cluster.html
+
+Sequelize Notes:
+
+once a release version is created, we need to write migrations when we need to upgrade a real wolrd server!
+
+
+//All possible Options.
+var sequelize = new Sequelize('database', 'username', 'password', {
+    // custom host; default: localhost
+    host: 'my.server.tld',
+
+    // custom port; default: 3306
+    port: 12345,
+
+    // custom protocol
+    // - default: 'tcp'
+    // - added in: v1.5.0
+    // - postgres only, useful for heroku
+    protocol: null,
+
+    // disable logging; default: console.log
+    logging: false,
+
+    // max concurrent database requests; default: 50
+    maxConcurrentQueries: 100,
+
+    // the sql dialect of the database
+    // - default is 'mysql'
+    // - currently supported: 'mysql', 'sqlite', 'postgres'
+    dialect: 'mysql',
+
+    // the storage engine for sqlite
+    // - default ':memory:'
+    storage: 'path/to/database.sqlite',
+
+    // disable inserting undefined values as NULL
+    // - default: false
+    omitNull: true,
+
+    // Specify options, which are used when sequelize.define is called.
+    // The following example:
+    //   define: {timestamps: false}
+    // is basically the same as:
+    //   sequelize.define(name, attributes, { timestamps: false })
+    // so defining the timestamps for each model will be not necessary
+    // Below you can see the possible keys for settings. All of them are explained on this page
+    define: {
+        underscored: false
+        freezeTableName: false,
+        syncOnAssociation: true,
+        charset: 'utf8',
+        collate: 'utf8_general_ci',
+        classMethods: {method1: function() {}},
+        instanceMethods: {method2: function() {}},
+        timestamps: true
+    },
+
+    // similiar for sync: you can define this to always force sync for models
+    sync: { force: true },
+
+    // sync after each association (see below). If set to false, you need to sync manually after setting all associations. Default: true
+    syncOnAssociation: true,
+
+    // use pooling in order to reduce db connection overload and to increase speed
+    // currently only for mysql and postgresql (since v1.5.0)
+    pool: { maxConnections: 5, maxIdleTime: 30},
+
+    // language is used to determine how to translate words into singular or plural form based on the [lingo project](https://github.com/visionmedia/lingo)
+    // options are: en [default], es
+    language: 'en'
+})
+
+
+
+// Create the tables:
+//model.Pub.sync(); // will emit success or failure event
+
+// Force the creation!
+//model.Pub.sync({force: true}) // this will drop the table first and re-create it afterwards
+
+//// drop the tables:
+//model.Pub.drop() // will emit success or failure event
+
+//// event handling:
+//model.Pub.[sync|drop]().success(function() {
+//    // ok ... everything is nice!
+//}).error(function(error) {
+//        // oooh, did you entered wrong database credentials?
+//    })
+
+
+var chainer = new Sequelize.Utils.QueryChainer;
+
+chainer
+    .add(
+        model.Pub.sync().error(function (error) {
+            logger.log("Error on syncing Pub: " + error);
+            throw error;
+        })
+    ).add(
+        model.Test.sync().error(function (error) {
+            logger.log("Error on syncing " + error);
+        })
+    );
+
+
+chainer.run()
+    .error(function (errors) {
+        logger.log("couln't sync \n" + error);
+    })
+    .success(function () {
+        logger.log("Model Synced!");
+
+        startServer();
+    });

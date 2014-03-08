@@ -1,0 +1,37 @@
+{
+    "name": "RavenCryptServer",
+    "version": "0.1.0",
+    "description": "RavenCryptServer",
+    "main": "server.js",
+    "scripts": {
+    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
+    },
+    "repository": { "type" : "git" },
+    "keywords": [
+    "Node.js",
+    "RavenCrypt",
+    "Server",
+    "Crypto"
+    ],
+    "private": true,
+    "author": "RavenCrypt",
+    "license": "AGPLV3",
+    "readmeFilename": "README.md",
+    "dependencies": {
+        "node-uuid": "*",
+        "cron":"1.0.1",
+        "express": "3.x",
+        "log4js": "0.6.8",
+        "mysql": "~2.0.0-alpha7",
+        "nodeunit": "0.8.1",
+        "sequelize": "1.7.0-rc5",
+        "sqlite3": "*",
+        "spdy":"*",
+        "captchapng": "*",
+        "socket.io-clusterhub": "*",
+        "openpgp": "*",
+        "raw-body": "*",
+        "busboy": "*",
+        "socket.io": "*"
+    }
+}

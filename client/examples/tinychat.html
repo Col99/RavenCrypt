@@ -1,0 +1,120 @@
+<html>
+<head>
+    <script src="../src/lib/jquery/jquery.js"></script>
+    <script src="../src/lib/socket.io-client/socket.io.js"></script>
+
+    <style type="text/css">
+        .Field{
+            padding:8px;
+            border:1px solid blue;
+            margin-bottom:8px;
+        }
+    </style>
+
+    <script>
+        var socket;
+    </script>
+
+</head>
+<body>
+
+(Accept Certificate @ <a href="https://127.0.0.1:1338/">https://127.0.0.1:1338</a> or else this wont work)
+
+<h1>TinyChat</h1>
+
+<p>Status</p>
+<div id="Status" class="Field"></div>
+
+<p><button id="Connect">Connect</button></p>
+
+
+<h1>TinyChat</h1>
+
+<p>User Name</p>
+<input type="text" id="User" size="40" />
+<p>Chat</p>
+<textarea id="Chat" rows="15" cols="100"></textarea>
+<p>Message</p>
+<input type="text" id="Message" size="40" />
+
+<p><button id="Send">Send</button></p>
+
+
+<script>
+    var user = "user" + CryptoJS.lib.WordArray.random(16).toString();
+    $("#User").val(user);
+
+    function addMsg(text){
+        var content = $("#Chat").val();
+
+        $("#Chat").val(content + '\n' + text);
+    }
+
+    $("#Connect").click(function () {
+        if(socket){
+            return;
+        }
+
+        $("#Status").text('');
+
+        try{
+            //holy fuck - { 'force new connection': true } is necessary if an error accrued. i never got socket.io to work correctly in all cases after that
+            //i had some very bad experiences even in testing with this and reconnect = true.. i think we should handle this our self's.
+            //meaning: if you use both these options (as would be best) you need to react to all the events 3 event of the socket and react accordingly
+
+
+            //https://www.exratione.com/2013/05/the-use-of-cookies-versus-query-string-tokens-to-identify-sessions-in-socketio/
+            //you can only use the QUERY and this is actually urlsyntax.. keep the length small..
+            var user = $("#User").val();
+            socket = io.connect('https://127.0.0.1:1338/tinyChat', { 'force new connection': true, reconnect: false, query: "tinychat=true&chattiny=true&tinyName=" + user } );
+        } catch(err) {
+            $("#Status").text('Connection failed: ' + err);
+            return;
+        }
+
+        if(socket.socket.connecting)
+            $("#Status").text('Connecting..');
+
+        socket.on('error', function(err){
+            $("#Status").text('Connection Failed: ' + JSON.stringify(err) );
+            socket = null;
+        });
+
+        socket.on('connect', function () {
+            $("#Status").text('Connected');
+        });
+
+        socket.on('message', function(from, msg){
+            addMsg(new Date().getTime() + ' - ' + from + ': ' + msg);
+        });
+
+        socket.on('userConnected', function(msg){
+            addMsg(new Date().getTime() + ': ' + msg);
+        });
+
+        socket.on('userDisconnected', function(msg){
+            addMsg(new Date().getTime() + ': ' + msg);
+        });
+
+        socket.on('disconnect', function () {
+            $("#Status").text('Disconnected');
+            socket = null;
+        });
+    });
+
+    $("#Send").click(function () {
+        if(!socket)
+            return;
+
+        //var user = $("#User").val();
+        var message = $("#Message").val();
+
+        //socket.emit('message', user, message);
+        socket.emit('message', message);
+        message.val('');
+    });
+
+</script>
+
+</body>
+</html>

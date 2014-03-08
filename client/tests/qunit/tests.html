@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>QUnit Example</title>
+    <link rel="stylesheet" href="qunit-1.14.0.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+
+<!--testing framework-->
+<script src="qunit-1.14.0.js"></script>
+
+<!--libs-->
+<script src="../../src/lib/jquery/jquery.js"></script>
+<script src="../../src/lib/socket.io-client/socket.io.js"></script>
+<script src="../../src/lib/node-uuid/uuid.js"></script>
+
+<script src="../../src/crypto/openpgpjs/openpgp.min.js"></script>
+
+<script src="../../src/crypto/lz-string/lz-string.js"></script>
+<script src="../../src/crypto/RavenCrypt/RavenCrypt.js"></script>
+
+<!--tests-->
+<script src="../CryptoTestAsymetric.js"></script>
+<script src="../CryptoTestSymetric.js"></script>
+<script src="../CryptoTestSymetricSpeed.js"></script>
+<script src="../HashTest.js"></script>
+<script src="../tests.js"></script>
+
+
+
+</body>
+</html>

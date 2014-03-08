@@ -1,0 +1,62 @@
+<div class="rc-form">
+    <form class="form-horizontal" role="form">
+        <legend><h2>{{'REGISTER_STEP_2_IMPORT'|translate}}</h2></legend>
+
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="publicKeyArmored">{{'PUBLIC_KEY'|translate}}</label>
+            <div class="col-lg-8">
+                <textarea
+                        id="publicKeyArmored"
+                        ng-model="publicKeyArmored"
+                        name="publicKeyArmored"
+                        rows="5"
+                        class="form-control">
+                </textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-lg-4 control-label" for="privateKeyArmored">{{'PRIVATE_KEY'|translate}}</label>
+            <div class="col-lg-8">
+                <textarea
+                        id="privateKeyArmored"
+                        ng-model="privateKeyArmored"
+                        name="privateKeyArmored"
+                        rows="10"
+                        class="form-control">
+                </textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-lg-offset-4 col-lg-8">
+                <div class="checkbox">
+                    <label>
+                        <input
+                                type="checkbox"
+                                ng-model="keyHasPassword"/>
+                        {{'PASSWORD_PROTECTED'|translate}}
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div ng-hide="showError">
+            <br />
+            <p class="text-center"><i class="glyphicon glyphicon-info-sign"/> {{'INFO_IMPORT_KEY'|translate}}</p>
+            <p class="text-center"><i class="glyphicon glyphicon-warning-sign"/> {{'WARNING_IMPORT_KEY'|translate}}</p>
+        </div>
+
+        <div ng-show="showError">
+            <br />
+            <p class="text-center"><i class="glyphicon glyphicon-warning-sign"></i> {{'NO_PGP_KEY'|translate}}</p>
+        </div>
+
+        <div class="form-group">
+            <div class="col-lg-12">
+                <br />
+                <button id="finishRegister" ng-click="finishRegister()" name="finishRegister" class="btn btn-primary pull-right">{{'FINISH_REGISTER'|translate}}</button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,962 @@
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <!--dependencies-->
+    <script src="../src/lib/jquery/jquery.js"></script>
+    <script src="../src/lib/socket.io-client/socket.io.js"></script>
+    <script src="../src/lib/node-uuid/uuid.js"></script>
+
+    <!--crypto-->
+    <script src='../src/crypto/openpgpjs/openpgp.min.js'></script>
+    <!--<script src="../src/crypto/jsonc/jsonc.js"></script>-->
+    <script src='../src/crypto/lz-string/lz-string.js'></script>
+    <script src='../src/crypto/RavenCrypt/RavenCrypt.js'></script>
+
+    <style type="text/css">
+        .Field {
+            padding: 8px;
+            border: 1px solid blue;
+            margin-bottom: 8px;
+        }
+    </style>
+
+    <script>
+        var socket;
+    </script>
+
+</head>
+<body bgcolor="#f0f0f0">
+
+(Accept Certificate @ <a href="https://127.0.0.1:1338/">https://127.0.0.1:1338</a> while using self signed certificates)
+
+
+<h1>Register</h1>
+
+<p>Private Key</p>
+
+<div id="PVK" class="Field"></div>
+<p>Public Key</p>
+
+<div id="PBK" class="Field"></div>
+<p>KeyID</p>
+
+<div id="KeyID" class="Field"></div>
+<p>QR Code</p>
+
+<div id="QR" class="Field"></div>
+<p>RSA Key Length</p>
+<input type="text" id="KeyLength" value="512" size="40"/>
+
+<p>User Name</p>
+<input type="text" id="User" size="40"/>
+
+<p>User Server</p>
+<input type="text" value="127.0.0.1:1338" id="UserServer" size="40"/>
+
+<p>
+    <button id="Register">register</button>
+    <button id="Random">random name</button>
+</p>
+
+
+<h1>Confirm</h1>
+
+<p>Message</p>
+
+<div id="MSG" class="Field"></div>
+<p>QR Code</p>
+<input type="text" id="Code" size="4"/>
+
+<p>
+    <button id="Confirm">confirm</button>
+</p>
+
+
+<h1>Login</h1>
+
+<p>Session</p>
+
+<div id="Session" class="Field"></div>
+<p>validUntil</p>
+
+<div id="validUntil" class="Field"></div>
+<p>sessionKeyID</p>
+
+<div id="sessionKeyID" class="Field"></div>
+<p>encrypted</p>
+
+<div id="encrypted" class="Field"></div>
+<p>
+    <button id="Login">Login</button>
+</p>
+
+
+<h1>Communication</h1>
+
+<p>Status</p>
+
+<div id="Status" class="Field"></div>
+<p>
+    <button id="Connect">Connect</button>
+</p>
+
+
+<h1>GetContactPubKey</h1>
+
+<p>ContactName</p>
+<input type="text" value="test" id="ContactName"/>
+
+<p>ContactServer</p>
+<input type="text" value="127.0.0.1:1338" id="ContactServer"/>
+
+<p>ContactPubKey</p>
+
+<div id="ContactPubKey" class="Field"></div>
+<p>
+    <button id="GetContactPubKey">GetContactPubKey</button>
+</p>
+
+
+<h1>Communication</h1>
+
+<p>MyComKey</p>
+
+<div id="MyComKey" class="Field"></div>
+<p>OutgoingCommunication</p>
+
+<div id="OutgoingCommunication" class="Field"></div>
+<p>ContactServerAnswer</p>
+
+<div id="ContactServerAnswer" class="Field"></div>
+<p>MyServerAnswer</p>
+
+<div id="MyServerAnswer" class="Field"></div>
+<p>ContactComKey</p>
+
+<div id="ContactComKey" class="Field"></div>
+<p>
+    <button id="CreateComKey">CreateComKey</button>
+    <button id="InitiateCom">Initiate Communication</button>
+</p>
+
+
+<h1>PrivateChat</h1>
+
+<p>EstablishedSendKey</p>
+
+<div id="EstablishedSendKey" class="Field"></div>
+<p>EstablishedReceiveKey</p>
+
+<div id="EstablishedReceiveKey" class="Field"></div>
+
+<p>Chat</p>
+<textarea id="Chat" rows="15" cols="100"></textarea>
+
+<p>Message</p>
+<input type="text" id="Message" size="40"/>
+
+<p>
+    <button id="SendMessage">SendMessage</button>
+</p>
+
+
+<script type="text/javascript">
+
+var inputUser = $("#User");
+var inputUserServer = $("#UserServer");
+var divPrivateKey = $("#PVK");
+var divPublicKey = $("#PBK");
+var divKeyID = $("#KeyID");
+var buttonRandom = $("#Random");
+var inputKeyLength = $("#KeyLength");
+var buttonRegister = $("#Register");
+var divQR = $("#QR");
+var divMSG = $("#MSG");
+var buttonConfirm = $("#Confirm");
+var buttonLogin = $("#Login");
+var divEncrypted = $("#encrypted");
+var divSession = $("#Session");
+var divStatus = $("#Status");
+var divAnswer = $("#Answer");
+var divValidUntil = $("#validUntil");
+var divSessionKeyID = $("#sessionKeyID");
+var divContactPubKey = $("#ContactPubKey");
+var buttonConnect = $("#Connect");
+var inputCode = $("#Code");
+var inputContactName = $("#ContactName");
+var inputContactServer = $("#ContactServer");
+var buttonGetContactPubKey = $("#GetContactPubKey");
+
+
+var divMyComKey = $("#MyComKey");
+var divOutgoingCommunication = $("#OutgoingCommunication");
+var divContactServerAnswer = $("#ContactServerAnswer");
+var divMyServerAnswer = $("#MyServerAnswer");
+var divContactComKey = $("#ContactComKey");
+var buttonInitiateCom = $("#InitiateCom");
+var buttonCreateComKey = $("#CreateComKey");
+
+var divEstablishedSendKey = $("#EstablishedSendKey");
+var divEstablishedReceiveKey = $("#EstablishedReceiveKey");
+
+var textAreaChat = $("#Chat");
+var inputMessage = $("#Message");
+var buttonSendMessage = $("#SendMessage");
+
+inputUser.val('test');
+
+divPrivateKey.text(
+        '-----BEGIN PGP PRIVATE KEY BLOCK-----' + '\n' +
+                '' + '\n' +
+                'xcA4BFJAq0ABAgCZxUDsSPdPL+AaAE+uu+jDyR4nrVCtKDFhnf7dqJ3ai3m2' + '\n' +
+                'VQdRktq3cP46OLzOIHyBeh+Ro48rMBWWXveOYvc5ABEBAAEAAf9QRazSrHSO' + '\n' +
+                'Hgv7BtaR/P5R1perVsqa2jSNJRF7XR6qiv1ixr6xcPVijC9OMeYRF7oVrVPG' + '\n' +
+                'McvOoDUUa6hAxlZRAQDUxD+koGq9G5yLvHfODy+3zjEgbP1nouPc8jrsgtgl' + '\n' +
+                'fwEAuQQhhsmVQMBdKIONHrua0AifdN2NFlGkwmixOQQR70cBALiKnp44Kcxp' + '\n' +
+                '86rDzIIZ69LbDptxja56X7OpjkG3rX1OU3zNQHVzZXI1MWY0YTQ5OGU5MGY3' + '\n' +
+                'NTRlZTY4ZDNkZjFiMDA5ZmEwNUBodHRwczovL3JhdmVuY3J5cHQubmV0OjEz' + '\n' +
+                'MzjCXAQQAQgAEAUCUkCrQAkQ+RjvsDdapy4AAIuSAf96S8POsAa8a+QdnXGn' + '\n' +
+                'fbZycflRfohQ/SRM1axrxzRMMom9pisCFx8TxY9fqCbCLFizfxQR9CduKAWS' + '\n' +
+                'Zn5rDFrS' + '\n' +
+                '=wOKm' + '\n' +
+                '-----END PGP PRIVATE KEY BLOCK-----'
+);
+divPublicKey.text(
+        '-----BEGIN PGP PUBLIC KEY BLOCK-----' + '\n' +
+                '' + '\n' +
+                '' + '\n' +
+                'xk0EUkCrQAECAJnFQOxI908v4BoAT6676MPJHietUK0oMWGd/t2ondqLebZV' + '\n' +
+                'B1GS2rdw/jo4vM4gfIF6H5GjjyswFZZe945i9zkAEQEAAc1AdXNlcjUxZjRh' + '\n' +
+                'NDk4ZTkwZjc1NGVlNjhkM2RmMWIwMDlmYTA1QGh0dHBzOi8vcmF2ZW5jcnlw' + '\n' +
+                'dC5uZXQ6MTMzOMJcBBABCAAQBQJSQKtACRD5GO+wN1qnLgAAi5IB/3pLw86w' + '\n' +
+                'Brxr5B2dcad9tnJx+VF+iFD9JEzVrGvHNEwyib2mKwIXHxPFj1+oJsIsWLN/' + '\n' +
+                'FBH0J24oBZJmfmsMWtI=' + '\n' +
+                '=vcwW' + '\n' +
+                '-----END PGP PUBLIC KEY BLOCK-----'
+);
+var hash = openpgp.crypto.hash.sha256(divPublicKey.text());
+var keyID = openpgp.util.hexstrdump(hash);
+divKeyID.text(keyID);
+
+login();
+openConnection();
+//    getPublicKey();
+//    requestCom();
+
+
+function randomName() {
+    var random = openpgp.random.getRandomBytes(4);
+    var user = "user" + openpgp.util.hexstrdump(random);
+    inputUser.val(user);
+}
+
+function randomKeys() {
+
+    var user = inputUser.val();
+    var keyLength = inputKeyLength.val();
+
+    //no port here! the idea is to also create mail addresses, similar to our user accounts,
+    //even if they need to be created in sync later and ravencrypt it self has no default port.
+    var serverAndPort = inputUserServer.val();
+    var server = serverAndPort.substr(0, serverAndPort.lastIndexOf(":"));
+    var userIdForPublicKeyServer = user + "@" + server;
+
+    //1 = RSA
+    //512 bit is just for testing, generate 2048 bit or more in real world scenarios!
+    var keyPair = RavenCryptAsymmetricKeyPair.createRSAKeyPair("1", keyLength, userIdForPublicKeyServer);
+
+    //we don't need a password here, but it should be used in real world scenarios
+    //var keyPair = openpgp.generate_key_pair(1, 512, "user", passphrase);
+
+    var privateKey = keyPair['privateKey'];
+    var privateKeyArmored = keyPair['privateKeyArmored'];
+    var publicKeyArmored = keyPair['publicKeyArmored'];
+
+    divPrivateKey.text(privateKeyArmored);
+    divPublicKey.text(publicKeyArmored);
+
+    var hash = openpgp.crypto.hash.sha256(publicKeyArmored);
+    var keyID = openpgp.util.hexstrdump(hash);
+
+    divKeyID.text(keyID);
+
+}
+
+buttonRandom.click(function () {
+    randomName();
+    randomKeys();
+});
+
+buttonRegister.click(function () {
+
+    var user = inputUser.val();
+    var publicKeyArmored = divPublicKey.text();
+    var keyID = divKeyID.text();
+
+    //http://api.jquery.com/category/ajax/
+    //http://coursesweb.net/jquery/jquery-ajax
+    $.ajax({
+        type: 'POST',
+        url: "https://" + inputUserServer.val() + "/register",
+        data: JSON.stringify({
+            user: user,
+            publicKey: publicKeyArmored,
+            keyID: keyID
+        }),
+        success: function (data) {
+            processData(data);
+        },
+        error: function (jqXHR) {
+            switch (jqXHR.status) {
+                case 500:
+                    // Server side error
+                    divQR.text(jqXHR.responseText);
+                    break;
+                case 400:
+                    //something went wrong, read the text!
+                    divQR.text(jqXHR.responseText);
+                    break;
+                    break;
+                default:
+                    //everything else
+                    divQR.text(jqXHR.responseText);
+            }
+        }
+    });
+
+    function processData(data) {
+        var img = document.createElement("img");
+        img.setAttribute(
+                'src',
+                'data:image/png;base64,' + data);
+
+        divQR.empty();
+        divQR.append(img);
+    }
+});
+
+buttonConfirm.click(function () {
+
+    var user = inputUser.val().toLowerCase();
+    var code = inputCode.val();
+    var privateKeyArmored = divPrivateKey.text();
+
+    var privateKey = new RavenCryptAsymmetricPrivateKey(privateKeyArmored);
+    var signedCode = privateKey.sign(code);
+
+    $.ajax({
+        type: 'POST',
+        url: "https://" + inputUserServer.val() + "/register/confirm",
+        data: JSON.stringify({
+            user: user,
+            activationCode: signedCode
+        }),
+        success: function () {
+            checkOk();
+        },
+        error: function (jqXHR) {
+            switch (jqXHR.status) {
+                case 500:
+                    // Server side error
+                    divMSG.text(jqXHR.responseText);
+                    break;
+                case 400:
+                    //something went wrong, read the text!
+                    divMSG.text(jqXHR.responseText);
+                    break;
+                default:
+                    //everything else
+                    divMSG.text(jqXHR.responseText);
+            }
+        }
+    });
+
+    function checkOk() {
+        divMSG.text("Activation complete, have fun!");
+    }
+
+})
+
+buttonLogin.click(function () {
+    login();
+});
+
+function login() {
+
+    var user = inputUser.val().toLowerCase();
+    var keyID = divKeyID.text();
+
+    $.ajax({
+        type: 'POST',
+        url: "https://" + inputUserServer.val() + "/login",
+        dataType: "json",
+        data: JSON.stringify({
+            user: user,
+            keyID: keyID
+        }),
+        success: function (data) {
+            checkOk(data);
+        },
+        error: function (jqXHR) {
+            switch (jqXHR.status) {
+                case 500:
+                    // Server side error
+                    divEncrypted.text(jqXHR.responseText);
+                    break;
+                case 400:
+                    //something went wrong, read the text!
+                    divEncrypted.text(jqXHR.responseText);
+                    break;
+                case 401:
+                    //not authenticated
+                    divEncrypted.text(jqXHR.responseText);
+                    break;
+                default:
+                    //everything else
+                    divEncrypted.text(jqXHR.responseText);
+            }
+        }
+    });
+
+
+    function checkOk(data) {
+        divSession.text(data);
+
+        var privateKeyArmored = divPrivateKey.text();
+
+
+        var privateKey = new RavenCryptAsymmetricPrivateKey(privateKeyArmored);
+
+        var decrypted = privateKey.decrypt(data);
+
+        var dJSON = JSON.parse(decrypted);
+
+        divValidUntil.text(dJSON.validUntil);
+        divSessionKeyID.text(dJSON.sessionKeyID);
+        divEncrypted.text(dJSON.encrypted);
+    }
+
+
+}
+
+function openConnection() {
+    if (socket) {
+        return;
+    }
+
+    var sessionKeyID = divSessionKeyID.text();
+    var encrypted = divEncrypted.text();
+
+    var encoded = encodeURIComponent(encrypted);
+
+    divStatus.text('');
+
+    try {
+        socket =
+                io.connect(
+                        "https://" + inputUserServer.val() + "/",
+                        {
+                            'force new connection': true,
+                            reconnect: false,
+                            query: "sessionKeyID=" + sessionKeyID + "&encrypted=" + encoded
+                        }
+                );
+    } catch (err) {
+        divStatus.text('Connection failed: ' + err);
+        socket = null;
+        return;
+    }
+
+    if (socket.socket.connecting) {
+        divStatus.text('Connecting..');
+    }
+
+    prepareSocket();
+}
+
+function prepareSocket() {
+
+    socket.on('error', function (err) {
+        divStatus.text('Connection Error: ' + JSON.stringify(err));
+        socket = null;
+        window.setTimeout(function () {
+            openConnection()
+        }, 5000);
+    });
+
+    socket.on('connect', function () {
+        divStatus.text('Connected');
+    });
+
+    socket.on('com/receive', function (data) {
+        handleCom(data);
+    });
+
+    socket.on('msg/receive', function (data) {
+        msgReceived(data);
+    });
+
+    socket.on('disconnect', function (msg) {
+        //booted = kicked ;-) means the server closed the connection because we did something wrong or not on time
+        divStatus.text('Disconnected:' + msg);
+        socket = null;
+        window.setTimeout(function () {
+            openConnection()
+        }, 5000);
+    });
+}
+
+
+buttonGetContactPubKey.click(function () {
+    getPublicKey();
+});
+
+function getPublicKey() {
+    var contactName = inputContactName.val().toLowerCase();
+    var bodyData = JSON.stringify({
+        name: contactName
+    });
+
+    $.ajax({
+        type: 'POST',
+        url: "https://" + inputContactServer.val() + "/keys/list",
+        dataType: "json",
+        data: bodyData,
+        success: function (data) {
+            done(data);
+        },
+        error: function (jqXHR) {
+            switch (jqXHR.status) {
+                case 500:
+                    // Server side error
+                    divContactPubKey.text(jqXHR.responseText);
+                    break;
+                case 400:
+                    //something went wrong, read the text!
+                    divContactPubKey.text(jqXHR.responseText);
+                    break;
+                case 401:
+                    //not authenticated
+                    divContactPubKey.text(jqXHR.responseText);
+                    break;
+                default:
+                    //everything else
+                    divContactPubKey.text(jqXHR.responseText);
+            }
+        }
+    });
+
+    function done(data) {
+        var stringData = JSON.stringify(data);
+        divContactPubKey.text(stringData);
+    }
+}
+
+buttonConnect.click(function () {
+    openConnection()
+});
+
+var myComKey = null;
+function createComKey() {
+    myComKey = RavenCryptComKey.createNew(0);
+
+    var now = new Date();
+    //add a valid until to the com key so it does not last forever and the other user has to change it
+    //otherwise this we have no good pfs protocol and just decrease our key length
+    myComKey.validUntil = now.setDate(now.getDate() + 32);
+
+    var jsonComKey = JSON.stringify(myComKey);
+
+    divMyComKey.text(jsonComKey);
+}
+
+buttonCreateComKey.click(function () {
+            createComKey()
+        }
+);
+
+buttonInitiateCom.click(function () {
+    if (!socket) {
+        divOutgoingCommunication.text('Not Connected!');
+        return;
+    } else {
+        divOutgoingCommunication.text('');
+    }
+
+    if (!myComKey) {
+        createComKey();
+    }
+
+
+    var myKeyID = divKeyID.text();
+
+    var comRequest = {
+        counter: 0,
+        pubKeyID: myKeyID
+    };
+
+    var communication = {
+        comKey: myComKey,
+        comRequest: comRequest
+    }
+
+    sendCom(communication);
+
+});
+
+function getContactKey() {
+    var keys = divContactPubKey.text();
+    var contactPubKeys;
+    try {
+        contactPubKeys = JSON.parse(keys);
+    } catch (err) {
+        divOutgoingCommunication.text("CONTACT_PUB_KEY_MISSING");
+        throw "CONTACT_PUB_KEY_MISSING";
+    }
+    if (contactPubKeys) {
+        if (contactPubKeys instanceof Array &&
+                contactPubKeys[0]) {
+            return contactPubKeys[0];
+        } else {
+            divOutgoingCommunication.text("CONTACT_PUB_INVALID");
+            throw "CONTACT_PUB_INVALID";
+        }
+    } else {
+        divOutgoingCommunication.text("CONTACT_PUB_KEY_MISSING");
+        throw "CONTACT_PUB_KEY_MISSING";
+    }
+}
+
+function sendCom(communication) {
+
+    var contactPubKey = getContactKey();
+    var privateKey = divPrivateKey.text();
+    var myRcPrivateKey = new RavenCryptAsymmetricPrivateKey(privateKey);
+    var myKeyID = divKeyID.text();
+    var rcPubKey = new RavenCryptAsymmetricPublicKey(contactPubKey.key);
+
+    var jsonCommunication = JSON.stringify(communication);
+    var encryptedCommunication = rcPubKey.signAndEncrypt(jsonCommunication, myRcPrivateKey.parsedPrivateKeys);
+
+    var uid = uuid.v4();
+    //this is an implementation that is part of openpgpjs.. however we don't know how long it will stay this way so use the real uuid
+    //var uid = JXG.Util.genUUID();
+
+    var contactName = inputContactName.val().toLowerCase();
+    var contactServer = inputContactServer.val();
+    var contactKeyID = contactPubKey.keyID;
+    var userName = inputUser.val().toLowerCase();
+    var userServer = inputUserServer.val();
+
+    var bodyData = {
+        id: uid,
+        receiver: contactName,
+        receiverKeyID: contactKeyID,
+        sender: userName,
+        senderServer: userServer,
+        senderKeyID: myKeyID,
+        text: encryptedCommunication
+    };
+
+    divOutgoingCommunication.text(JSON.stringify(bodyData));
+
+    //send Part
+    $.ajax({
+        type: 'POST',
+        url: "https://" + contactServer + "/com/receive",
+        dataType: "json",
+        data: JSON.stringify(bodyData),
+        success: function (worked) {
+            divContactServerAnswer.text(JSON.stringify(worked));
+
+            if(worked){
+                //save Part
+
+                //since our other clients can't decrypt a message encrypted with the receivers
+                //pub key, we need to save it here encrypted with our OWN pub key. mumble mumble..
+
+                var publicKeyArmored = divPublicKey.text();
+                var rcPubKey = new RavenCryptAsymmetricPublicKey(publicKeyArmored);
+
+                var jsonCommunication = JSON.stringify(communication);
+                var encryptedCommunication = rcPubKey.signAndEncrypt(jsonCommunication, myRcPrivateKey.parsedPrivateKeys);
+
+                var saveData = {
+                    id: uid,
+                    receiver: contactName,
+                    receiverServer: contactServer,
+                    receiverKeyID: contactKeyID,
+                    senderKeyID: myKeyID,
+                    text: encryptedCommunication
+                };
+
+                var session = getLoginSession();
+
+                $.ajax({
+                    type: 'POST',
+                    beforeSend: function (request)
+                    {
+                        request.setRequestHeader("Session", session);
+                    },
+                    url: "https://" + inputUserServer.val() + "/com/save",
+                    dataType: "json",
+                    data: JSON.stringify(saveData),
+                    success: function (data) {
+                        var done = JSON.stringify(data);
+                        //done
+                    },
+                    error: function(jqXHR){
+                        var done = jqXHR.responseText;
+                        //done
+                    }
+                });
+            }
+        },
+        error: function (jqXHR) {
+            switch (jqXHR.status) {
+                case 500:
+                    // Server side error
+                    divContactServerAnswer.text(jqXHR.responseText);
+                    break;
+                case 400:
+                    //something went wrong, read the text!
+                    divContactServerAnswer.text(jqXHR.responseText);
+                    break;
+                case 401:
+                    //not authenticated
+                    divContactServerAnswer.text(jqXHR.responseText);
+                    break;
+                default:
+                    //everything else
+                    divContactServerAnswer.text(jqXHR.responseText);
+            }
+        }
+    });
+}
+
+function getLoginSession() {
+    var sessionKeyID = parseInt(divSessionKeyID.text());
+    var encrypted = divEncrypted.text();
+    return JSON.stringify({sessionKeyID: sessionKeyID, encrypted: encrypted});
+}
+
+//buttonCombine.click(function(){
+//    buildSymmetricKey();
+//});
+
+var contactComKey = null;
+
+function handleCom(data) {
+    var keys = divContactPubKey.text();
+    var contactPubKeys = JSON.parse(keys);
+    if (contactPubKeys) {
+        if (contactPubKeys instanceof Array && contactPubKeys[0])
+            var contactPubKey = contactPubKeys[0];
+        else
+            return;
+    } else {
+        return;
+    }
+
+    var rcContactPubKey = new RavenCryptAsymmetricPublicKey(contactPubKey.key);
+
+    var privateKey = divPrivateKey.text();
+    var rcPrivateKey = new RavenCryptAsymmetricPrivateKey(privateKey);
+
+    var userName = inputUser.val().toLowerCase();
+    var userServer = inputUserServer.val();
+
+    if (data.sender == userName &&
+            data.senderServer == userServer) {
+
+        //this is a saved message.
+        //in this case the massage is encrypted and signed with our OWN private/public key.
+
+        var publicKeyArmored = divPublicKey.text();
+        var rcPubKey = new RavenCryptAsymmetricPublicKey(publicKeyArmored);
+
+        var savedCom = rcPrivateKey.decryptAndVerify(data.text, rcPubKey.parsedPublicKeys);
+
+        divMyServerAnswer.text("OK: " + savedCom);
+        return;
+    }
+
+    var jsonContactComKey = rcPrivateKey.decryptAndVerify(data.text, rcContactPubKey.parsedPublicKeys);
+    var parsedContactComKey = JSON.parse(jsonContactComKey);
+
+    if(parsedContactComKey.comKey) {
+        contactComKey = new RavenCryptComKey();
+        contactComKey.fill(parsedContactComKey.comKey);
+        divContactComKey.text(JSON.stringify(parsedContactComKey.comKey));
+    }
+
+    if (!myComKey) {
+        createComKey();
+    }
+
+    if(parsedContactComKey.comRequest) {
+        //TODO get ContactPubKey if missing
+
+        var communication = {
+            comKey: myComKey
+        }
+
+        sendCom(communication);
+    }
+
+
+    //establish Key
+    var sendKey = myComKey.combine(contactComKey);
+    var receiveKey = contactComKey.combine(myComKey);
+
+    var jsonSendKey = JSON.stringify(sendKey);
+    var jsonReceiveKey = JSON.stringify(receiveKey);
+
+    divEstablishedSendKey.text(jsonSendKey);
+    divEstablishedReceiveKey.text(jsonReceiveKey);
+
+
+}
+
+
+buttonSendMessage.click(function () {
+    if (!socket) {
+        inputMessage.val('Not Connected!');
+        return;
+    }
+
+    if (!myComKey || !contactComKey)
+        return;
+
+    var text = inputMessage.val();
+
+    var rcMessage = new RavenCryptMessage(myComKey, contactComKey);
+    var instance = rcMessage.encrypt(text);
+
+
+    var contactName = inputContactName.val().toLowerCase();
+    var contactServer = inputContactServer.val();
+    var userName = inputUser.val().toLowerCase();
+    var userServer = inputUserServer.val();
+
+
+    var uid = uuid.v4();
+
+    var sendMsg = {
+        id: uid,
+        receiver: contactName,
+        receiverKeyID: contactComKey.id,
+        sender: userName,
+        senderServer: userServer,
+        senderKeyID: myComKey.id,
+        text: instance.message,
+        key: instance.messageKey
+    };
+
+    //send Part
+    $.ajax({
+        type: 'POST',
+        url: "https://" + contactServer + "/msg/receive",
+        dataType: "json",
+        data: JSON.stringify(sendMsg),
+        success: function (worked) {
+
+            if(worked) {
+                //save Part
+
+                var saveData = {
+                    id: uid,
+                    receiver: inputContactName.val().toLowerCase(),
+                    receiverServer: contactServer,
+                    receiverKeyID: contactComKey.id,
+                    senderKeyID: myComKey.id,
+                    text: instance.message,
+                    key: instance.messageKey
+                };
+
+                var session = getLoginSession();
+
+                $.ajax({
+                    type: 'POST',
+                    beforeSend: function (request)
+                    {
+                        request.setRequestHeader("Session", session);
+                    },
+                    url: "https://" + inputUserServer.val() + "/msg/save",
+                    dataType: "json",
+                    data: JSON.stringify(saveData),
+                    success: function (data) {
+                        var done = JSON.stringify(data);
+                        //done
+                    },
+                    error: function(jqXHR){
+                        var done = jqXHR.responseText;
+                        //done
+                    }
+                });
+            }
+        },
+        error: function (jqXHR) {
+            switch (jqXHR.status) {
+                case 500:
+                    // Server side error
+                    divContactServerAnswer.text(jqXHR.responseText);
+                    break;
+                case 400:
+                    //something went wrong, read the text!
+                    divContactServerAnswer.text(jqXHR.responseText);
+                    break;
+                case 401:
+                    //not authenticated
+                    divContactServerAnswer.text(jqXHR.responseText);
+                    break;
+                default:
+                    //everything else
+                    divContactServerAnswer.text(jqXHR.responseText);
+            }
+        }
+    });
+});
+
+///*function insertInput() {
+//    var text = inputMessage.val();
+//
+//    var content = textAreaChat.val();
+//    textAreaChat.val(content + '\n' + inputUser.val() + ": " + text);
+//    inputMessage.val('');
+//}
+//
+//
+//function msgSend(data) {
+//    insertInput();
+//}*/
+
+function msgReceived(data) {
+    var userName = inputUser.val().toLowerCase();
+    var userServer = inputUserServer.val();
+
+    //depending if this is our saved message or this is our this is a received message
+    //we need to turn this around..
+    var rcMessage;
+    var decrypted;
+    if (data.receiver == userName &&
+        data.receiverServer == userServer) {
+
+        rcMessage = new RavenCryptMessage(myComKey, contactComKey);
+    } else {
+
+        rcMessage = new RavenCryptMessage(contactComKey, myComKey);
+    }
+    decrypted = rcMessage.decrypt(data.text, data.key);
+
+
+
+    var content = $("#Chat").val();
+    textAreaChat.val(content + '\n' + data.sender + "@" + data.senderServer + ": " + decrypted);
+}
+
+</script>
+
+</body>
+</html>

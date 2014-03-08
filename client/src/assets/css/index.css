@@ -1,0 +1,24 @@
+body {
+    background-color: rgba(18, 22, 35, 0.82);
+}
+.white-text {
+    color: #FFFFFF;
+}
+.darker-text {
+     color: #BBBBBB;
+}
+.rc-logo-text {
+    font-size: large;
+}
+a.white-text:link {
+    color: #BBBBBB;
+}
+a.white-text:visited {
+    color: #BBBBBB;
+}
+a.white-text:hover {
+    color: #FFFFFF;
+}
+a.white-text:active {
+    color: #FFFFFF;
+}

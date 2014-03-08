@@ -1,0 +1,772 @@
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <!--dependencies-->
+    <script src="../src/lib/jquery/jquery.js"></script>
+    <script src="../src/lib/socket.io-client/socket.io.js"></script>
+    <script src="../src/lib/node-uuid/uuid.js"></script>
+
+    <!--crypto-->
+    <script src='../src/crypto/openpgpjs/openpgp.min.js'></script>
+    <!--<script src="../src/crypto/jsonc/jsonc.js"></script>-->
+    <script src='../src/crypto/lz-string/lz-string.js'></script>
+    <script src='../src/crypto/RavenCrypt/RavenCrypt.js'></script>
+
+    <style type="text/css">
+        .Field {
+            padding: 8px;
+            border: 1px solid blue;
+            margin-bottom: 8px;
+        }
+    </style>
+
+    <script>
+        var socket;
+    </script>
+
+</head>
+<body bgcolor="#f0f0f0">
+
+(Accept Certificate @ <a href="https://127.0.0.1:1338/">https://127.0.0.1:1338</a> while using self signed certificates)
+
+
+<h1>Register</h1>
+
+<p>Private Key</p>
+<div id="PVK" class="Field"></div>
+<p>Public Key</p>
+<div id="PBK" class="Field"></div>
+<p>KeyID</p>
+<div id="KeyID" class="Field"></div>
+<p>QR Code</p>
+<div id="QR" class="Field"></div>
+<p>RSA Key Length</p>
+<input type="text" id="KeyLength" value="512" size="40"/>
+<p>User Name</p>
+<input type="text" id="User" size="40"/>
+<p>User Server</p>
+<input type="text" value="127.0.0.1:1338" id="UserServer" size="40"/>
+
+<p>
+    <button id="Register">register</button>
+    <button id="Random">random name</button>
+</p>
+
+
+<h1>Confirm</h1>
+
+<p>Message</p>
+
+<div id="MSG" class="Field"></div>
+<p>QR Code</p>
+<input type="text" id="Code" size="4"/>
+
+<p>
+    <button id="Confirm">confirm</button>
+</p>
+
+
+<h1>Login</h1>
+
+<p>Session</p>
+<div id="Session" class="Field"></div>
+<p>validUntil</p>
+<div id="validUntil" class="Field"></div>
+<p>sessionKeyID</p>
+<div id="sessionKeyID" class="Field"></div>
+<p>encrypt</p>
+<div id="encrypted" class="Field"></div>
+<p>
+    <button id="Login">Login</button>
+</p>
+
+
+<h1>Upload</h1>
+
+<p>Encrypt</p>
+<span class="Field">
+    <input type="checkbox" id="encrypt" />
+</span>
+<p>File</p>
+<input type="file" id="File" class="Field" />
+<p>Hash</p>
+<div id="hash" class="Field"></div>
+<p>percentComplete</p>
+<div id="percentComplete" class="Field"></div>
+<p>uploadResponse</p>
+<div id="uploadResponse" class="Field"></div>
+<p>
+    <button id="Upload">Upload</button>
+</p>
+
+
+<h1>Download</h1>
+
+<p>Signature</p>
+<div id="downloadSignature" class="Field"></div>
+<p>percentComplete</p>
+<div id="downloadPercentComplete" class="Field"></div>
+<p>downloadResponse</p>
+<div id="downloadResponse" class="Field"></div>
+<p>encryption</p>
+<div id="encryption" class="Field"></div>
+<p>image</p>
+<img id="image" />
+<p>
+    <button id="download">Download</button>
+</p>
+
+
+
+<script type="text/javascript">
+
+var inputUser = $("#User");
+var inputUserServer = $("#UserServer");
+var divPrivateKey = $("#PVK");
+var divPublicKey = $("#PBK");
+var divKeyID = $("#KeyID");
+var buttonRandom = $("#Random");
+var inputKeyLength = $("#KeyLength");
+var buttonRegister = $("#Register");
+var divQR = $("#QR");
+var divMSG = $("#MSG");
+var buttonConfirm = $("#Confirm");
+var buttonLogin = $("#Login");
+var divEncrypted = $("#encrypted");
+var divSession = $("#Session");
+var divStatus = $("#Status");
+var divAnswer = $("#Answer");
+var divValidUntil = $("#validUntil");
+var divSessionKeyID = $("#sessionKeyID");
+var divContactPubKey = $("#ContactPubKey");
+var buttonConnect = $("#Connect");
+var inputCode = $("#Code");
+
+
+var fileFile = $("#File");
+var buttonUpload = $("#Upload");
+var divPercentComplete = $("#percentComplete");
+
+var divHash = $("#hash");
+var divUploadResponse = $("#uploadResponse");
+var chkEncrypt = $("#encrypt");
+
+
+var divDownloadSignature = $("#downloadSignature");
+var divDownloadPercentComplete = $("#downloadPercentComplete");
+var divEncryption = $("#encryption");
+var divDownloadResponse = $("#downloadResponse");
+var imgImage = $("#image");
+var buttonDownload = $("#download");
+
+
+inputUser.val('test');
+
+divPrivateKey.text(
+        '-----BEGIN PGP PRIVATE KEY BLOCK-----' + '\n' +
+                '' + '\n' +
+                'xcA4BFJAq0ABAgCZxUDsSPdPL+AaAE+uu+jDyR4nrVCtKDFhnf7dqJ3ai3m2' + '\n' +
+                'VQdRktq3cP46OLzOIHyBeh+Ro48rMBWWXveOYvc5ABEBAAEAAf9QRazSrHSO' + '\n' +
+                'Hgv7BtaR/P5R1perVsqa2jSNJRF7XR6qiv1ixr6xcPVijC9OMeYRF7oVrVPG' + '\n' +
+                'McvOoDUUa6hAxlZRAQDUxD+koGq9G5yLvHfODy+3zjEgbP1nouPc8jrsgtgl' + '\n' +
+                'fwEAuQQhhsmVQMBdKIONHrua0AifdN2NFlGkwmixOQQR70cBALiKnp44Kcxp' + '\n' +
+                '86rDzIIZ69LbDptxja56X7OpjkG3rX1OU3zNQHVzZXI1MWY0YTQ5OGU5MGY3' + '\n' +
+                'NTRlZTY4ZDNkZjFiMDA5ZmEwNUBodHRwczovL3JhdmVuY3J5cHQubmV0OjEz' + '\n' +
+                'MzjCXAQQAQgAEAUCUkCrQAkQ+RjvsDdapy4AAIuSAf96S8POsAa8a+QdnXGn' + '\n' +
+                'fbZycflRfohQ/SRM1axrxzRMMom9pisCFx8TxY9fqCbCLFizfxQR9CduKAWS' + '\n' +
+                'Zn5rDFrS' + '\n' +
+                '=wOKm' + '\n' +
+                '-----END PGP PRIVATE KEY BLOCK-----'
+);
+divPublicKey.text(
+        '-----BEGIN PGP PUBLIC KEY BLOCK-----' + '\n' +
+                '' + '\n' +
+                '' + '\n' +
+                'xk0EUkCrQAECAJnFQOxI908v4BoAT6676MPJHietUK0oMWGd/t2ondqLebZV' + '\n' +
+                'B1GS2rdw/jo4vM4gfIF6H5GjjyswFZZe945i9zkAEQEAAc1AdXNlcjUxZjRh' + '\n' +
+                'NDk4ZTkwZjc1NGVlNjhkM2RmMWIwMDlmYTA1QGh0dHBzOi8vcmF2ZW5jcnlw' + '\n' +
+                'dC5uZXQ6MTMzOMJcBBABCAAQBQJSQKtACRD5GO+wN1qnLgAAi5IB/3pLw86w' + '\n' +
+                'Brxr5B2dcad9tnJx+VF+iFD9JEzVrGvHNEwyib2mKwIXHxPFj1+oJsIsWLN/' + '\n' +
+                'FBH0J24oBZJmfmsMWtI=' + '\n' +
+                '=vcwW' + '\n' +
+                '-----END PGP PUBLIC KEY BLOCK-----'
+);
+var hash = openpgp.crypto.hash.sha256(divPublicKey.text());
+var keyID = openpgp.util.hexstrdump(hash);
+divKeyID.text(keyID);
+
+login();
+//openConnection();
+//getPublicKey();
+//requestCom();
+
+
+function randomName() {
+    var random = openpgp.random.getRandomBytes(4);
+    var user = "user" + openpgp.util.hexstrdump(random);
+    inputUser.val(user);
+}
+
+function randomKeys() {
+
+    var user = inputUser.val();
+    var keyLength = inputKeyLength.val();
+
+    //no port here! the idea is to also create mail addresses, similar to our user accounts,
+    //even if they need to be created in sync later and ravencrypt it self has no default port.
+    var serverAndPort = inputUserServer.val();
+    var server = serverAndPort.substr(0, serverAndPort.lastIndexOf(":"));
+    var userIdForPublicKeyServer = user + "@" + server;
+
+    //1 = RSA
+    //512 bit is just for testing, generate 2048 bit or more in real world scenarios!
+    var keyPair = RavenCryptAsymmetricKeyPair.createRSAKeyPair("1", keyLength, userIdForPublicKeyServer);
+
+    //we don't need a password here, but it should be used in real world scenarios
+    //var keyPair = openpgp.generate_key_pair(1, 512, "user", passphrase);
+
+    var privateKey = keyPair['privateKey'];
+    var privateKeyArmored = keyPair['privateKeyArmored'];
+    var publicKeyArmored = keyPair['publicKeyArmored'];
+
+    divPrivateKey.text(privateKeyArmored);
+    divPublicKey.text(publicKeyArmored);
+
+    var hash = openpgp.crypto.hash.sha256(publicKeyArmored);
+    var keyID = openpgp.util.hexstrdump(hash);
+
+    divKeyID.text(keyID);
+
+}
+
+buttonRandom.click(function () {
+    randomName();
+    randomKeys();
+});
+
+buttonRegister.click(function () {
+
+    var user = inputUser.val();
+    var publicKeyArmored = divPublicKey.text();
+    var keyID = divKeyID.text();
+
+    //http://api.jquery.com/category/ajax/
+    //http://coursesweb.net/jquery/jquery-ajax
+    $.ajax({
+        type: 'POST',
+        url: "https://" + inputUserServer.val() + "/register",
+        data: JSON.stringify({
+            user: user,
+            publicKey: publicKeyArmored,
+            keyID: keyID
+        }),
+        success: function (data) {
+            processData(data);
+        },
+        error: function (jqXHR) {
+            switch (jqXHR.status) {
+                case 500:
+                    // Server side error
+                    divQR.text(jqXHR.responseText);
+                    break;
+                case 400:
+                    //something went wrong, read the text!
+                    divQR.text(jqXHR.responseText);
+                    break;
+                    break;
+                default:
+                    //everything else
+                    divQR.text(jqXHR.responseText);
+            }
+        }
+    });
+
+    function processData(data) {
+        var img = document.createElement("img");
+        img.setAttribute(
+                'src',
+                'data:image/png;base64,' + data);
+
+        divQR.empty();
+        divQR.append(img);
+    }
+});
+
+buttonConfirm.click(function () {
+
+    var user = inputUser.val().toLowerCase();
+    var code = inputCode.val();
+    var privateKeyArmored = divPrivateKey.text();
+
+    var privateKey = new RavenCryptAsymmetricPrivateKey(privateKeyArmored);
+    var signedCode = privateKey.sign(code);
+
+    $.ajax({
+        type: 'POST',
+        url: "https://" + inputUserServer.val() + "/register/confirm",
+        data: JSON.stringify({
+            user: user,
+            activationCode: signedCode
+        }),
+        success: function () {
+            checkOk();
+        },
+        error: function (jqXHR) {
+            switch (jqXHR.status) {
+                case 500:
+                    // Server side error
+                    divMSG.text(jqXHR.responseText);
+                    break;
+                case 400:
+                    //something went wrong, read the text!
+                    divMSG.text(jqXHR.responseText);
+                    break;
+                default:
+                    //everything else
+                    divMSG.text(jqXHR.responseText);
+            }
+        }
+    });
+
+    function checkOk() {
+        divMSG.text("Activation complete, have fun!");
+    }
+
+})
+
+buttonLogin.click(function () {
+    login();
+});
+
+function login() {
+
+    var user = inputUser.val().toLowerCase();
+    var keyID = divKeyID.text();
+
+    $.ajax({
+        type: 'POST',
+        url: "https://" + inputUserServer.val() + "/login",
+        dataType: "json",
+        data: JSON.stringify({
+            user: user,
+            keyID: keyID
+        }),
+        success: function (data) {
+            checkOk(data);
+        },
+        error: function (jqXHR) {
+            switch (jqXHR.status) {
+                case 500:
+                    // Server side error
+                    divEncrypted.text(jqXHR.responseText);
+                    break;
+                case 400:
+                    //something went wrong, read the text!
+                    divEncrypted.text(jqXHR.responseText);
+                    break;
+                case 401:
+                    //not authenticated
+                    divEncrypted.text(jqXHR.responseText);
+                    break;
+                default:
+                    //everything else
+                    divEncrypted.text(jqXHR.responseText);
+            }
+        }
+    });
+
+
+    function checkOk(data) {
+        divSession.text(data);
+
+        var privateKeyArmored = divPrivateKey.text();
+
+
+        var privateKey = new RavenCryptAsymmetricPrivateKey(privateKeyArmored);
+
+        var decrypted = privateKey.decrypt(data);
+
+        var dJSON = JSON.parse(decrypted);
+
+        divValidUntil.text(dJSON.validUntil);
+        divSessionKeyID.text(dJSON.sessionKeyID);
+        divEncrypted.text(dJSON.encrypted);
+    }
+
+
+}
+
+function getLoginSession() {
+    var sessionKeyID = parseInt(divSessionKeyID.text());
+    var encrypted = divEncrypted.text();
+    return JSON.stringify({sessionKeyID: sessionKeyID, encrypted: encrypted});
+}
+
+
+buttonUpload.click(function () {
+    upload();
+});
+
+//var ab2str_blobreader = function(buf, callback) {
+//    var bb = new Blob([buf]);
+//    var f = new FileReader();
+//    f.onload = function(e) {
+//        callback(e.target.result);
+//    }
+//    f.readAsText(bb);
+//}
+//
+//var str2ab_blobreader = function(str, callback) {
+//    var bb = new Blob([str]);
+//    var f = new FileReader();
+//    f.onload = function(e) {
+//        callback(e.target.result);
+//    }
+//    f.readAsArrayBuffer(bb);
+//}
+
+var ab2str = function(buf) {
+    var stringArr = [];
+
+    var piece  = 1000;
+    var i = 0;
+    while(i < buf.byteLength) {
+        var rest = buf.byteLength - i;
+        if(rest > piece) rest = piece;
+        var slice = buf.slice(i, i + rest);
+        var bufView = new Uint8Array(slice);
+        var str = String.fromCharCode.apply(null, bufView);
+        stringArr.push(str);
+
+        i += piece;
+    }
+
+    return stringArr.join("");
+}
+
+var str2ab = function(str) {
+    var buf = new ArrayBuffer(str.length);
+    var bufView = new Uint8Array(buf);
+    for (var i = 0; i < str.length; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+}
+
+
+
+//https://github.com/beatgammit/gzip-js
+//included in jsonc
+//this is not jet usual in every case, lz-string performs better
+//            contents = gzip.zip(contents,{level:9});
+//            contents = arr2str(contents);
+
+//            contents = str2arr(contents);
+//            contents = gzip.unzip(contents,{level:9});
+//            contents = arr2str(contents);
+//
+//
+//var arr2str = function(arr) {
+//    var stringArr = [];
+//
+//    var piece  = 1000;
+//    var i = 0;
+//    while(i < arr.length) {
+//        var rest = arr.length - i;
+//        if(rest > piece) rest = piece;
+//        var slice = arr.slice(i, i + rest);
+//        var str = String.fromCharCode.apply(String, slice);
+//        stringArr.push(str);
+//
+//        i += piece;
+//    }
+//
+//    return stringArr.join("");
+//}
+//
+//function str2arr(str) {
+//    var nIndex = 0,
+//            nLen = str.length,
+//            arr = [];
+//    for (; nIndex < nLen; nIndex++) {
+//        arr.push(str.charCodeAt(nIndex));
+//    }
+//    return arr;
+//}
+
+
+
+
+function upload(){
+
+    readSingleFile();
+
+    function readSingleFile() {
+        var f = fileFile[0].files[0];
+
+        if (f) {
+            var r = new FileReader();
+            r.onload = function(e) {
+                var ab = e.target.result;
+
+                var fileInfo = ""
+                    + "name: " + f.name + " "
+                    + "type: " + f.type + " "
+                    + "size: " + f.size + " bytes";
+
+                uploadContents(ab, f);
+            };
+            r.readAsArrayBuffer(f);
+        } else {
+            alert("Failed to load file");
+        }
+    }
+
+    function uploadContents(ab, file) {
+
+        var encrypted = chkEncrypt[0].checked;
+        var contents = ab2str(ab);
+
+
+        //conversion test
+//        var b;
+//        var ab = str2ab(contents);
+//        b = new Blob([ab], {type : file.type});
+//        var objUrl = URL.createObjectURL(b);
+//        imgImage[0].src = objUrl;
+
+
+
+        var fData = new FormData();
+
+        var publicKeyArmored = divPublicKey.text();
+        var privateKeyArmored = divPrivateKey.text();
+        var pubKey = new RavenCryptAsymmetricPublicKey(publicKeyArmored);
+        var priKey = new RavenCryptAsymmetricPrivateKey(privateKeyArmored);
+
+
+        if(encrypted) {
+            //we only need to do compression when inside encrypted containers.
+            //the rest is handled by the usual gzip HTTP compression
+            //we maybe should check filetype, because highly compressed formats get worse here.
+            //most thing however get smaller, even images.
+
+            //makes currently more trouble than its worth.
+            //contents = RavenCrypt.compress(contents, RavenCrypt.defaultCompressionAlgorithm);
+
+            var symKey = new RavenCryptSymmetricKey.createNew(RavenCrypt.defaultSymmetricAlgorithm);
+            contents = symKey.encrypt(contents);
+
+            var ab = str2ab(contents);
+
+            //test
+//            contents = symKey.decrypt(contents);
+//            contents = RavenCrypt.decompress(contents);
+//            var ab = str2ab(contents);
+//            b = new Blob([ab], {type : file.type});
+//            var objUrl = URL.createObjectURL(b);
+//            imgImage[0].src = objUrl;
+//            return;
+
+
+            var jsonMats = JSON.stringify(symKey);
+            //since we got a separate signature and hash here, we only need to encrypt our mats!
+            var encryptedMats = pubKey.encrypt(jsonMats);
+
+            fData.append("encryption", encryptedMats);
+
+            //ab = str2ab(contents);
+
+        }
+
+//        contents = openpgp.util.hexstrdump(contents);
+//        contents = LZString.compressToBase64(contents);
+
+        //contents = openpgp.util.hexstrdump(contents);
+
+        var hashObj = openpgp.crypto.hash.sha256(contents);
+        var hash = openpgp.util.hexstrdump(hashObj);
+        fData.append("hash", hash);
+        divHash.text(hash);
+
+
+        var signature = priKey.sign(hash);
+        var signKeyID = divKeyID.text();
+
+        fData.append("signature", signature);
+        fData.append("signKeyID", signKeyID);
+
+
+
+
+        b = new Blob([contents], {type : file.type});
+        fData.append("file", b);
+
+
+        var session = getLoginSession();
+
+        $.ajax({
+            type: 'POST',
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function(evt) {
+                    //UPLOAD
+                    if (evt.lengthComputable) {
+                        var pComplete = Math.floor((evt.loaded / evt.total) * 100);
+                        //Do something with upload progress here
+
+                        divPercentComplete.text(pComplete);
+                    }
+                }, false);
+
+                return xhr;
+            },
+            beforeSend: function (request)
+            {
+                request.setRequestHeader("Session", session);
+            },
+            url: "https://" + inputUserServer.val() + "/file/upload",
+            async: true,
+            processData: false,
+            cache: false,
+            contentType: false,
+            data: fData,
+            success: function (data) {
+                var done = JSON.stringify(data);
+
+                divPercentComplete.text(100);
+
+                divUploadResponse.text(done);
+                //done
+            },
+            error: function(jqXHR){
+                var done = jqXHR.responseText;
+
+                divPercentComplete.text(100);
+
+                divUploadResponse.text(done);
+                //done
+            }
+        });
+    }
+}
+
+
+
+buttonDownload.click(function () {
+    download();
+});
+
+
+function download(){
+
+
+    var publicKeyArmored = divPublicKey.text();
+    var privateKeyArmored = divPrivateKey.text();
+    var pubKey = new RavenCryptAsymmetricPublicKey(publicKeyArmored);
+    var priKey = new RavenCryptAsymmetricPrivateKey(privateKeyArmored);
+
+    var request = {
+        user: inputUser.val(),
+        hash: divHash.text()
+    };
+
+    var encrypted = chkEncrypt[0].checked;
+
+    if(encrypted){
+        request.encParams = true;
+    }
+
+    $.ajax({
+        type: 'POST',
+        xhr: function() {
+            var xhr = new window.XMLHttpRequest();
+                xhr.addEventListener("progress", function(evt) {
+                    //DOWNLOAD
+                    if (evt.lengthComputable) {
+                        var pComplete = Math.floor((evt.loaded / evt.total) * 100);
+                        //Do something with download progress
+
+                        divDownloadPercentComplete.text(pComplete);
+                    }
+                }, false);
+            return xhr;
+        },
+        url: "https://" + inputUserServer.val() + "/file/get",
+        data: JSON.stringify(request),
+        success: function (data, textStatus, jqXHR) {
+
+            divDownloadPercentComplete.text(100);
+            divDownloadResponse.text(data.substr(0, 100));
+
+            var xMimeType = jqXHR.getResponseHeader('Content-Type');
+            var xSignature = jqXHR.getResponseHeader('X-Signature');
+            var xSignKeyId = jqXHR.getResponseHeader('X-SignKeyID');
+            var xEncryption = jqXHR.getResponseHeader('X-Encryption');
+
+            xMimeType = decodeURIComponent(xMimeType);
+            xSignature = decodeURIComponent(xSignature);
+            xSignKeyId = decodeURIComponent(xSignKeyId);
+            xEncryption = decodeURIComponent(xEncryption);
+
+            divDownloadSignature.text(xSignature);
+            if(xEncryption) {
+                divEncryption.text(xEncryption);
+            }
+
+            var hashObj = openpgp.crypto.hash.sha256(data);
+            var hash = openpgp.util.hexstrdump(hashObj);
+            var hashBefore = divHash.text();
+
+            //data = openpgp.util.hex2bin(data);
+
+            if (hash != hashBefore){
+                return alert("WTF Hash didn't match!");
+            }
+
+            //check signature before decryption
+            try {
+                var signedHash = pubKey.readAndVerify(xSignature);
+            } catch(err){
+                return alert("Invalid signature!");
+            }
+
+            if(signedHash != hashBefore){
+                return alert("WTF SignedHash didn't match!");
+            }
+
+            if(encrypted) {
+
+                var ecParams = priKey.decrypt(xEncryption);
+                var objSymKey = JSON.parse(ecParams);
+                var symKey = new RavenCryptSymmetricKey(objSymKey.algorithm, objSymKey.key, objSymKey.iv);
+
+                data = symKey.decrypt(data);
+
+//                data = RavenCrypt.decompress(data);
+            }
+
+            var ab = str2ab(data);
+            var b = new Blob([ab], {type : xMimeType});
+            var objUrl = URL.createObjectURL(b);
+
+            imgImage[0].src = objUrl;
+
+
+            //done
+        },
+        error: function(jqXHR){
+            var done = jqXHR.responseText;
+            divDownloadPercentComplete.text(100);
+            divDownloadResponse.text(done);
+
+            imgImage.src = "";
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
