@@ -2,8 +2,11 @@
 
 ## Objective
 Provide Communication platform for RavenCrypt Clients
-No Communicate with other Servers however. This should not be a Centralized System!
-This Server should be more like a regular E-Mail Server, except that it doesn't need to talk to other severs!
+
+Does not communicate with other Servers. This should not be a centralized System!
+
+This Server should is a bit like an E-Mail inbox, except that it doesn't need to talk to other severs and also
+supports blogging features as well as file hosting for "attachments".
 
 ## Usage
 run "npm install"
