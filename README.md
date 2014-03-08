@@ -1,5 +1,4 @@
 ## RavenCrypt
-==========
 
 [RavenCrypt](http://ravencrypt.net/) Perfect Forward Secrecy Communication and Social Blogging Service!
 
