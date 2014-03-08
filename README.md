@@ -2,7 +2,7 @@
 
 [RavenCrypt](http://ravencrypt.net/) Perfect Forward Secrecy Communication and Social Blogging Service!
 
-## What is It
+### What is It
 
 Client Component using Angular JS and Server Component using Node.JS that represent a modern Instant Messenger and more.
 
