@@ -75,7 +75,6 @@ asyncTest( "asynchronous test: one second later!", function() {
     }, 1000);
 });
 
-
 asyncTest("put works when in schema", function() {
     expect(1);
 
@@ -110,8 +109,28 @@ asyncTest("put works when in schema", function() {
 //                start();
 //            });
     }
+});
+
+asyncTest("remove works", function() {
+    expect(1);
+
+    db
+        .remove(
+            'account',['user', 'server']
+        )
+        .done(function(count){
+            ok(count > 0);
+            //console.log('succeeded');
+            start();
+        })
+        .fail(function(err){
+            ok(false);
+            //console.log('failed:' + JSON.stringify(err));
+            start();
+        });
 
 });
+
 
 //asyncTest("put in the same item twice and it crashes", function() {
 //    var account = [{
