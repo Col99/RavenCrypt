@@ -75,8 +75,8 @@ asyncTest( "asynchronous test: one second later!", function() {
     }, 1000);
 });
 
-asyncTest("put works when in schema", function() {
-    expect(1);
+asyncTest("put and remove works when in schema", function() {
+    expect(2);
 
     var account = [{
         user: 'user',
@@ -90,28 +90,24 @@ asyncTest("put works when in schema", function() {
     } catch(err){
         ok(false);
     } finally {
-        start();
+        db
+            .remove(
+                'account',['user', 'server']
+            )
+            .done(function(count){
 
-//        db
-//            .remove(
-//                'account',['user', 'server']
-//            )
-//            .done(function(count){
-//
-//                ok(count > 0);
-//                //console.log('succeeded');
-//                start();
-//            })
-//            .fail(function(err){
-//
-//                ok(false);
-//                //console.log('failed:' + JSON.stringify(err));
-//                start();
-//            });
+                ok(count > 0, 'records deleted');
+                start();
+            })
+            .fail(function(err){
+
+                ok(false, 'failed deleting records');
+                start();
+            });
     }
 });
 
-asyncTest("remove works", function() {
+asyncTest("remove fails when not existing", function() {
     expect(1);
 
     db
@@ -119,12 +115,12 @@ asyncTest("remove works", function() {
             'account',['user', 'server']
         )
         .done(function(count){
-            ok(count > 0);
+            ok(count == 0);
             //console.log('succeeded');
             start();
         })
         .fail(function(err){
-            ok(false);
+            ok(true);
             //console.log('failed:' + JSON.stringify(err));
             start();
         });

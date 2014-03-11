@@ -1,7 +1,7 @@
-angular.module('ydndb', [])
-    .factory('database', function() {
-        return new ydn.db.Storage('feature-matrix', schema);
-    });
+//angular.module('ydndb', [])
+//    .factory('database', function() {
+//        return new ydn.db.Storage('feature-matrix', schema);
+//    });
 
 //options = {
 //    Encryption: {
@@ -28,8 +28,10 @@ var options = {
             key: 'aYHF6vfuGHpfWS*eRLrPQxZjSó~É5c6HjCscqDqRtZasp¡JWSMGaW'
         }]
     },
-    mechanisms: ['indexeddb', 'websql', 'localstorage'], // default ordering
+    //mechanisms: ['indexeddb', 'websql', 'localstorage'], // default ordering
+
+    mechanisms: ['memory'], // default ordering
     size: 2 * 1024 * 1024 *100 //200MB to fuck up your iphone. ;-)
 };
 
-var db = new ydn.db.Storage('RavenCrypt2', schema, options);
+var db = new ydn.db.Storage('RavenCrypt-test', schema, options);
