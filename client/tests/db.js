@@ -66,20 +66,33 @@ test("put throws when not in schema", function() {
     }
 
 });
-//
-//asyncTest("put works when in schema", function() {
-//    var account = [{
-//        user: 'user',
-//        server:'server'
-//    }];
-//
-//    try {
-//        db.put('account', account);
-//
-//        ok(true);
-//    } catch(err){
-//        ok(false);
-//    } finally {
+
+asyncTest( "asynchronous test: one second later!", function() {
+    expect( 1 );
+    setTimeout(function() {
+        ok( true, "Passed and ready to resume!" );
+        start();
+    }, 1000);
+});
+
+
+asyncTest("put works when in schema", function() {
+    expect(1);
+
+    var account = [{
+        user: 'user',
+        server:'server'
+    }];
+
+    try {
+        db.put('account', account);
+
+        ok(true);
+    } catch(err){
+        ok(false);
+    } finally {
+        start();
+
 //        db
 //            .remove(
 //                'account',['user', 'server']
@@ -87,18 +100,18 @@ test("put throws when not in schema", function() {
 //            .done(function(count){
 //
 //                ok(count > 0);
-//                console.log('succeeded');
+//                //console.log('succeeded');
 //                start();
 //            })
 //            .fail(function(err){
 //
 //                ok(false);
-//                console.log('failed:' + JSON.stringify(err));
+//                //console.log('failed:' + JSON.stringify(err));
 //                start();
 //            });
-//    }
-//
-//});
+    }
+
+});
 
 //asyncTest("put in the same item twice and it crashes", function() {
 //    var account = [{

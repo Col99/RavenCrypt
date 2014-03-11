@@ -25,7 +25,7 @@ module.exports = function(config) {
         {pattern: 'src/crypto/RavenCrypt/*.js', served: true, included: true},
 
         {pattern: 'src/lib/ydn-db/ydn.db-isw-core-crypt-qry-dev.js', served: true, included: true},
-        {pattern: 'src/app/ydndb-stoarge.js', served: true, included: true},
+        {pattern: 'src/js/ydndb-stoarge.js', served: true, included: true},
 
         'tests/db.js'
 //        'tests/*.js'
