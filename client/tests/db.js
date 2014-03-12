@@ -67,13 +67,13 @@ test("put throws when not in schema", function() {
 
 });
 
-asyncTest( "asynchronous test: one second later!", function() {
-    expect( 1 );
-    setTimeout(function() {
-        ok( true, "Passed and ready to resume!" );
-        start();
-    }, 1000);
-});
+//asyncTest( "asynchronous test: one second later!", function() {
+//    expect( 1 );
+//    setTimeout(function() {
+//        ok( true, "Passed and ready to resume!" );
+//        start();
+//    }, 1000);
+//});
 
 asyncTest("put and remove works when in schema", function() {
     expect(2);
@@ -116,11 +116,10 @@ asyncTest("remove fails when not existing", function() {
         )
         .done(function(count){
             ok(count == 0);
-            //console.log('succeeded');
             start();
         })
         .fail(function(err){
-            ok(true);
+            ok(false);
             //console.log('failed:' + JSON.stringify(err));
             start();
         });
@@ -128,37 +127,108 @@ asyncTest("remove fails when not existing", function() {
 });
 
 
-//asyncTest("put in the same item twice and it crashes", function() {
-//    var account = [{
-//        user: 'user',
-//        server:'server'
-//    }];
-//
-//    try {
-//        db.put('account', account);
-//
-//        db.put('account', account);
-//
-//        ok(false);
-//    } catch(err){
-//        ok(true);
-//    } finally {
-//        db
-//            .remove(
-//                'account',['user', 'server']
-//            )
-//            .done(function(count){
-//
-//                ok(count > 0);
-//                console.log('succeeded');
-//                start();
-//            })
-//            .fail(function(err){
-//
-//                ok(false);
-//                console.log('failed:' + JSON.stringify(err));
-//                start();
-//            });
-//    }
-//
-//});
+asyncTest("put in the same item twice and you get no error, but don't create any new entry.", function() {
+    expect(3);
+
+    var account = [{
+        user: 'user',
+        server:'server'
+    }];
+
+    try {
+        db.put('account', account);
+        db.put('account', account);
+
+        db.put('account', {
+            user: 'user2',
+            server:'server'
+        });
+
+        ok(true);
+    } catch(err){
+        ok(false);
+    } finally {
+
+        db
+            .remove(
+                'account',['user', 'server']
+            )
+            .done(function(count){
+                ok(count == 1);
+                removeSecondEntry();
+            })
+            .fail(function(err){
+                ok(false);
+                //console.log('failed:' + JSON.stringify(err));
+                start();
+            });
+
+        function removeSecondEntry() {
+
+            db
+                .remove(
+                    'account',['user2', 'server']
+                )
+                .done(function(count){
+                    ok(count == 1);
+                    //console.log('succeeded');
+                    start();
+                })
+                .fail(function(err){
+                    ok(false);
+                    //console.log('failed:' + JSON.stringify(err));
+                    start();
+                });
+        }
+
+    }
+
+});
+
+
+asyncTest("put and get work", function() {
+    expect(3);
+
+    var account = [{
+        user: 'user',
+        server:'server',
+        someOther: "value"
+    }];
+
+    try {
+        db.put('account', account);
+
+        ok(true);
+    } catch(err){
+        ok(false);
+    } finally {
+        db
+            .get(
+                'account',['user', 'server']
+            )
+            .done(function(obj){
+                ok(obj.someOther == "value");
+                delteEntry();
+            })
+            .fail(function(err){
+                ok(false, 'failed deleting records');
+                start();
+            });
+
+        function delteEntry(){
+            db
+                .remove(
+                    'account',['user', 'server']
+                )
+                .done(function(count){
+                    ok(count == 1);
+                    start();
+                })
+                .fail(function(err){
+                    ok(false);
+                    //console.log('failed:' + JSON.stringify(err));
+                    start();
+                });
+        }
+    }
+});
