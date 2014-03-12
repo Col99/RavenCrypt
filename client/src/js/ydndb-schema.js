@@ -6,84 +6,48 @@ var schema = {
             name: 'account',
             keyPath: ['user', 'server'],
             indexes: [{
-                name: 'user',
-                unique: true
-            }, {
-                name: 'server',
+                keyPath: ['user', 'server'],
+                name: 'pk_index',
                 unique: true
             }]
         }, {
             name: 'userKeyPair',
             keyPath: ['user', 'server', 'id'],
             indexes: [{
-                name: 'user',
-                unique: true
-            }, {
-                name: 'server',
-                unique: true
-            }, {
-                name: 'id',
+                keyPath: ['user', 'server', 'id'],
+                name: 'pk_index',
                 unique: true
             }]
         }, {
             name: 'files',
             keyPath: ['name', 'server', 'hash'],
             indexes: [{
-                name: 'user',
-                unique: true
-            }, {
-                name: 'server',
-                unique: true
-            }, {
-                name: 'hash',
+                keyPath: ['name', 'server', 'hash'],
+                name: 'pk_index',
                 unique: true
             }]
         }, {
             name: 'conversationAttendee',
             keyPath: ['user', 'server', 'conversationID'],
             indexes: [{
-                name: 'user',
-                unique: true
-            }, {
-                name: 'server',
-                unique: true
-            }, {
-                name: 'conversationID',
+                keyPath: ['user', 'server', 'conversationID'],
+                name: 'pk_index',
                 unique: true
             }]
         }, {
             name: 'contact',
             keyPath: ['user', 'server', 'contactName', 'contactServer'],
             indexes: [{
-                name: 'user',
-                unique: true
-            }, {
-                name: 'server',
-                unique: true
-            }, {
-                name: 'contactName',
-                unique: true
-            }, {
-                name: 'contactServer',
+                keyPath: ['user', 'server', 'contactName', 'contactServer'],
+                name: 'pk_index',
                 unique: true
             }]
         }, {
             name: 'contactPubKey',
             keyPath: ['user', 'server', 'contactName', 'contactServer', 'id'],
             indexes: [{
-                name: 'user',
-                unique: true
-            }, {
-                name: 'server',
-                unique: true
-            }, {
-                name: 'contactName',
-                unique: true
-            }, {
-                name: 'contactServer',
-                unique: true
-            }, {
-                name: 'id',
+                keyPath: ['user', 'server', 'contactName', 'contactServer', 'id'],
+                name: 'pk_index',
                 unique: true
             }]
         }]
