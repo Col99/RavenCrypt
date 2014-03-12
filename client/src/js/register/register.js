@@ -259,7 +259,7 @@ app.controller('CreateKeyCtrl', function ($scope, $window, $location, $state, $s
 });
 
 
-app.controller('SignUpCtrl', function ($scope, $window, $location, $state, $stateParams, $indexedDB) {
+app.controller('SignUpCtrl', function ($scope, $window, $location, $state, $stateParams) {
     $scope.userName = $stateParams.userName;
     $scope.server = $stateParams.server;
     $scope.userID = $scope.userName + "@" + $scope.server;
@@ -299,11 +299,11 @@ app.controller('SignUpCtrl', function ($scope, $window, $location, $state, $stat
             success: function (data) {
                 $scope.showPending = false;
 
-                //TODO: add real account
-                addTestAccount($indexedDB, $scope.userID, function(){
-                    $state.transitionTo("login");
-                    $scope.$apply();
-                });
+//                //TODO: add real account
+//                addTestAccount($indexedDB, $scope.userID, function(){
+//                    $state.transitionTo("login");
+//                    $scope.$apply();
+//                });
             },
             error: function(jqXHR){
                 $scope.showPending = false;
@@ -330,21 +330,21 @@ app.controller('SignUpCtrl', function ($scope, $window, $location, $state, $stat
     }
 });
 
-function addTestAccount($indexedDB, userID, callback) {
+function addTestAccount($database, userID, callback) {
 
-    const ACCOUNTS_STORE = 'accounts';
-
-    $indexedDB.getDB(function (db) {
-        var tx = db.transaction(ACCOUNTS_STORE, "readwrite");
-        var store = tx.objectStore(ACCOUNTS_STORE);
-
-        var request = store.put({name: userID});
-
-        request.onerror = function() {
-            callback();
-        };
-        request.onsuccess = function() {
-            callback();
-        };
-    });
+//    const ACCOUNTS_STORE = 'accounts';
+//
+//    $indexedDB.getDB(function (db) {
+//        var tx = db.transaction(ACCOUNTS_STORE, "readwrite");
+//        var store = tx.objectStore(ACCOUNTS_STORE);
+//
+//        var request = store.put({name: userID});
+//
+//        request.onerror = function() {
+//            callback();
+//        };
+//        request.onsuccess = function() {
+//            callback();
+//        };
+//    });
 }

@@ -1,4 +1,4 @@
-app.controller('MainCtrl', function($scope, $window, $location, $state, $stateParams, $indexedDB, $rcConstants) {
+app.controller('MainCtrl', function($scope, $window, $location, $state, $stateParams, $rcConstants, $database) {
 
     $scope.account = null;
 

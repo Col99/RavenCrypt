@@ -1,7 +1,6 @@
 {
-  "name": "angularjs-seed",
-  "description": "A starter project for AngularJS",
-  "repository": "https://github.com/angular/angular-seed",
+  "name": "RavenCryptClient",
+  "description": "Raven Crypt Client",
   "private": true,
   "devDependencies": {
     "phantomjs" : "~1.9",
@@ -9,6 +8,7 @@
     "karma-junit-reporter" : "~0.1",
     "karma-jasmine" : "~0.1",
     "karma-qunit": "*",
-    "protractor" : "~0.17.0"
+    "protractor" : "~0.17.0",
+    "bower": "*"
   }
 }

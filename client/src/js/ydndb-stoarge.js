@@ -1,7 +1,4 @@
-angular.module('ydndb', [])
-    .factory('database', function() {
-        return new ydn.db.Storage('feature-matrix', schema);
-    });
+
 
 //options = {
 //    Encryption: {
@@ -32,4 +29,9 @@ var options = {
     size: 2 * 1024 * 1024 *100 //200MB to fuck up your iphone. ;-)
 };
 
-var db = new ydn.db.Storage('RavenCrypt2', schema, options);
+//var db = new ydn.db.Storage('RavenCrypt2', schema, options);
+
+angular.module('ydndb', [])
+    .factory('$database', function() {
+        return new ydn.db.Storage('RavenCrypt', schema, options);
+    });

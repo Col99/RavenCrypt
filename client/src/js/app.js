@@ -1,8 +1,8 @@
 const appVersion = 3;
 
 var app = angular
-    .module('RavenCrypt', ['ui.router', 'indexedDB', 'pascalprecht.translate'])
-    .config(function($stateProvider, $urlRouterProvider, $indexedDBProvider, $translateProvider) {
+    .module('RavenCrypt', ['ui.router', 'pascalprecht.translate'])
+    .config(function($stateProvider, $urlRouterProvider, $translateProvider) {
         // For any unmatched url, send to /route1
         $urlRouterProvider.otherwise("/login");
 
