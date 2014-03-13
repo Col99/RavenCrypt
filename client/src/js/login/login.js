@@ -1,4 +1,4 @@
-app.controller('LoginCtrl', function($scope, $window, $location, $state, $stateParams) {
+app.controller('LoginCtrl', function($scope, $window, $location, $state, $stateParams, $ydnDB) {
 
     const ACCOUNT_STORE = 'accounts';
 

@@ -31,7 +31,12 @@ var options = {
 
 //var db = new ydn.db.Storage('RavenCrypt2', schema, options);
 
-angular.module('ydndb', [])
-    .factory('$database', function() {
-        return new ydn.db.Storage('RavenCrypt', schema, options);
-    });
+angular.module('ydnDB', []).provider('$ydnDB', function() {
+    this.db = new ydn.db.Storage('RavenCrypt', schema, options);
+
+    this.$get = function($q, $timeout) {
+        return this.db;
+    };
+
+
+});
