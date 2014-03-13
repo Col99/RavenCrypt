@@ -1,34 +1,26 @@
 app.controller('LoginCtrl', function($scope, $window, $location, $state, $stateParams, $ydnDB) {
 
-    const ACCOUNT_STORE = 'accounts';
-
     $scope.accounts = [];
 
 //    //test data
 //    $scope.accounts.push({name:"first"});
 //    $scope.accounts.push({name:"second"});
 
-//    $indexedDB.getDB(function(db){
-//        var tx = db.transaction(ACCOUNT_STORE, "readonly");
-//        var store = tx.objectStore(ACCOUNT_STORE);
-//
-//        //get everything
-//        var request = store.openCursor(IDBKeyRange.lowerBound(0));
-//        request.onsuccess = function() {
-//            var cursor = request.result;
-//            if (cursor) {
-//                // Called for each matching record.
-//                $scope.accounts.push(cursor.value)
-//                $scope.account = $scope.accounts[0];
-//                cursor.continue();
-//                $scope.$apply();
-//            } else {
-//                if($scope.accounts.length == 0) {
-//                    $state.go("register.credentials");
-//                }
-//            }
-//        }
-//    });
+    $ydnDB.values('account').done(function(records) {
+        $scope.accounts = records;
+
+        for(var i=0;i<=records.lengt;i++){
+            // Called for each matching record.
+            $scope.accounts.push(records[i].value)
+        }
+
+        if(records.length > 0) {
+            $scope.account = $scope.accounts[0];
+            $scope.$apply();
+        } else {
+            $state.go("register.credentials");
+        }
+    });
 
     $scope.login = function() {
         //alert('TODO: Hi "' + $scope.account.name + '"');
