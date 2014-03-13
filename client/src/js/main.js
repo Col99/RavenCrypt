@@ -1,23 +1,15 @@
-app.controller('MainCtrl', function($scope, $window, $location, $state, $stateParams, $rcConstants, $database) {
-
+app.controller('MainCtrl', function($scope, $window, $location, $state, $stateParams, $rcConstants, $ydnDB) {
     $scope.account = null;
 
-//    $indexedDB.getDB(function(db){
-//        var tx = db.transaction($rcConstants.ACCOUNT_STORE, "readonly");
-//        var store = tx.objectStore($rcConstants.ACCOUNT_STORE);
-//
-//        //get everything
-//        var request = store.openCursor(IDBKeyRange.lowerBound(0));
-//        request.onsuccess = function() {
-//            var cursor = request.result;
-//            if (cursor) {
-//                // Called for each matching record.
-//                $scope.account = cursor.value;
-//                $scope.$apply();
-//            } else {
-//                $state.go("login");
-//                $state.$apply();
-//            }
-//        }
-//    });
+    alert("test");
+
+    $ydnDB.values('account').done(function(records) {
+        if(records.length > 0) {
+            $scope.account = records;
+            $scope.$apply();
+        } else {
+            $state.go("login");
+            $state.$apply();
+        }
+    });
 });
