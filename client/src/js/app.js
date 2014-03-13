@@ -26,6 +26,7 @@ var app = angular
 
         //http://www.ng-newsletter.com/posts/angular-ui-router.htmlS
 
+
         $stateProvider
             .state('main', {
                 url: "/main/:userID",
