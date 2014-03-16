@@ -9,9 +9,11 @@ app.controller('LoginCtrl', function($scope, $window, $location, $state, $stateP
     $ydnDB.values('account').done(function(records) {
         $scope.accounts = records;
 
-        for(var i=0;i<=records.lengt;i++){
-            // Called for each matching record.
-            $scope.accounts.push(records[i].value)
+        var l = records.length;
+        for(var i=0;i<l;i++){
+
+            records[i].id = records[i].user + "@@@" + records[i].server;
+
         }
 
         if(records.length > 0) {

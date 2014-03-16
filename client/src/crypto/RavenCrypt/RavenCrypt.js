@@ -330,7 +330,7 @@ RavenCryptAsymmetricPublicKey.prototype.readAndVerify = function(text){
     }
 
     return verified.text;
-}
+};
 
 RavenCryptAsymmetricPublicKey.prototype.getKeyID = function(){
     var hash = openpgp.crypto.hash.sha256(this.publicKeyArmored);

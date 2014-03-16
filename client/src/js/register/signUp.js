@@ -1,9 +1,9 @@
 'use strict';
 
-app.controller('RegisterSignUpCtrl', function ($scope, $window, $location, $state, $stateParams) {
+app.controller('RegisterSignUpCtrl', function ($scope, $window, $location, $state, $stateParams, $ydnDB) {
     $scope.userName = $stateParams.userName;
     $scope.server = $stateParams.server;
-    $scope.userID = $scope.userName + "@" + $scope.server;
+    $scope.userID = $scope.userName + "@@@" + $scope.server;
     $scope.keyHasPassword = $stateParams.keyHasPassword;
 
     $scope.privateKeyArmored = $.trim($stateParams.privateKeyArmored);
@@ -41,11 +41,22 @@ app.controller('RegisterSignUpCtrl', function ($scope, $window, $location, $stat
             success: function (data) {
                 $scope.showPending = false;
 
-//                //TODO: add real account
-//                addTestAccount($indexedDB, $scope.userID, function(){
-//                    $state.transitionTo("login");
-//                    $scope.$apply();
-//                });
+                var pubKey = new RavenCryptAsymmetricPublicKey($scope.publicKeyArmored);
+
+                $ydnDB.put('account', {
+                    user: $scope.userName,
+                    server: $scope.server
+                });
+                $ydnDB.put('userKeyPair', {
+                    user: $scope.userName,
+                    server: $scope.server,
+                    id: pubKey.getKeyID(),
+                    privateKeyArmored: $scope.privateKeyArmored,
+                    publicKeyArmored: $scope.publicKeyArmored
+                });
+
+                $state.transitionTo("login");
+                $scope.$apply();
             },
             error: function(jqXHR){
                 $scope.showPending = false;
@@ -73,22 +84,27 @@ app.controller('RegisterSignUpCtrl', function ($scope, $window, $location, $stat
     }
 });
 
+//                //TODO: add real account
+//                addTestAccount($indexedDB, $scope.userID, function(){
+//                    $state.transitionTo("login");
+//                    $scope.$apply();
+//                });
 
-function addTestAccount($database, userID, callback) {
-
-//    const ACCOUNTS_STORE = 'accounts';
+///*function addTestAccount($database, userID, callback) {
 //
-//    $indexedDB.getDB(function (db) {
-//        var tx = db.transaction(ACCOUNTS_STORE, "readwrite");
-//        var store = tx.objectStore(ACCOUNTS_STORE);
-//
-//        var request = store.put({name: userID});
-//
-//        request.onerror = function() {
-//            callback();
-//        };
-//        request.onsuccess = function() {
-//            callback();
-//        };
-//    });
-}
+////    const ACCOUNTS_STORE = 'accounts';
+////
+////    $indexedDB.getDB(function (db) {
+////        var tx = db.transaction(ACCOUNTS_STORE, "readwrite");
+////        var store = tx.objectStore(ACCOUNTS_STORE);
+////
+////        var request = store.put({name: userID});
+////
+////        request.onerror = function() {
+////            callback();
+////        };
+////        request.onsuccess = function() {
+////            callback();
+////        };
+////    });
+//}*/
