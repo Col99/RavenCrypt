@@ -40,5 +40,6 @@
     "SERVER_OVERLOAD" : "Server reported overload, try again!",
     "NO_PGP_KEY": "You did not enter a valid PGP Key!",
     "INCORRECT_USER_NAME_FORMAT": "You can only use A-Z, whole Numbers and _ in a User Name.",
-    "INCORRECT_SERVER_FORMAT": "Server Format incorrect. You need to enter a correct domain. You can however use a non-standard https port."
+    "INCORRECT_SERVER_FORMAT": "Server Format incorrect. You need to enter a correct domain. You can however use a non-standard https port.",
+    "BAD_REQUEST": "Bad Request."
 }

@@ -9,9 +9,10 @@ app.controller('RegisterSignUpCtrl', function ($scope, $window, $location, $stat
     $scope.privateKeyArmored = $.trim($stateParams.privateKeyArmored);
     $scope.publicKeyArmored = $.trim($stateParams.publicKeyArmored);
 
-    $scope.registerServerError = "";
+    $scope.showError = false;
 
-    $scope.showNoPGPKeysError = false;
+    $scope.error = "";
+    $scope.showError = false;
 
     try{
         var rcKeyPair = RavenCryptAsymmetricKeyPair.createNew({
@@ -20,20 +21,20 @@ app.controller('RegisterSignUpCtrl', function ($scope, $window, $location, $stat
         });
         $scope.keyID = rcKeyPair.keyID;
     } catch (err) {
-        $scope.showNoPGPKeysError = true;
+        $scope.showError = true;
     }
 
     $scope.register = function () {
         var requestUrl = "https://" + $scope.server + "/register";
 
+        $scope.showError = false;
         $scope.showPending = true;
 
         $.ajax({
             type: 'POST',
             url: requestUrl,
-            dataType: "json",
             data: JSON.stringify({
-                userName: $scope.userName,
+                user: $scope.userName,
                 publicKey: $scope.publicKeyArmored,
                 keyID: $scope.keyID
             }),
@@ -48,24 +49,25 @@ app.controller('RegisterSignUpCtrl', function ($scope, $window, $location, $stat
             },
             error: function(jqXHR){
                 $scope.showPending = false;
-                $scope.showRegisterServerError = true;
+                $scope.showError = true;
                 switch(jqXHR.status){
                     case 500:
                         // Server side error
-                        $scope.registerServerError = 'SERVER_ERROR';
+                        $scope.error = 'SERVER_ERROR';
                         break;
                     case 503:
                         // Server overload - try again
-                        $scope.UserExistsError = 'SERVER_OVERLOAD';
+                        $scope.error = 'SERVER_OVERLOAD';
                         break;
                     case 400:
-                        //something went wrong, server answer is a json string, we should have a translation for this
-                        $scope.UserExistsError = jqXHR.responseJSON;
+                        //something went wrong
+                        $scope.error = 'BAD_REQUEST';
                         break;
                     default:
                         //everything else
-                        $scope.UserExistsError = 'SERVER_UNABLE_TO_GET_DATA';
+                        $scope.error = 'SERVER_UNABLE_TO_GET_DATA';
                 }
+                $scope.$apply();
             }
         });
     }

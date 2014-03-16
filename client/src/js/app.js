@@ -6,6 +6,21 @@ var app = angular
         // For any unmatched url, send to /route1
         $urlRouterProvider.otherwise("/login");
 
+
+        var templateLoc = window.location.pathname;
+
+        var pathArray = templateLoc.split( '/' );
+        var targetLoc = "";
+
+        for (var i = 1; i < pathArray.length - 1; i++ ) {
+            targetLoc += "/";
+            targetLoc += pathArray[i];
+        }
+
+        targetLoc = targetLoc + "/crypto/openpgpjs/openpgp.worker.js";
+
+        openpgp.initWorker(targetLoc);
+
         //we can set our controllers here, but we can also set them inside the div... i don't know whats better (yet)
         //controller: "LoginCtrl"
 
@@ -25,8 +40,6 @@ var app = angular
         $translateProvider.preferredLanguage('en_US');
 
         //http://www.ng-newsletter.com/posts/angular-ui-router.htmlS
-
-
         $stateProvider
             .state('main', {
                 url: "/main/:userID",

@@ -54,38 +54,35 @@ app.controller('RegisterCreateKeyCtrl', function ($scope, $window, $location, $s
 
     var startWorker = function () {
         $scope.workerFinished = false;
-        var keyGenWorker = new Worker("partials/register/worker.js");
 
-        keyGenWorker.onmessage = function (oEvent) {
-            var data = oEvent.data;
 
-            $scope.privateKeyArmored = data.privateKeyArmored;
-            $scope.publicKeyArmored = data.publicKeyArmored;
+        var userIdForPublicKeyServer = $scope.userName + "@@@" + $scope.server;
+
+        if($scope.password == "") {
+            $scope.password = null;
+        }
+
+        openpgp.generateKeyPair($scope.algorithm, $scope.keyLength, userIdForPublicKeyServer,  $scope.password, callback);
+
+        function callback(err, keyPair) {
+            if(err) {
+                $scope.workerFinished = true;
+                console.log(JSON.stringify(err));
+                $scope.workerError = "KEY_GEN_ERROR";
+
+                $scope.$apply();
+                return;
+            }
+
+            $scope.privateKeyArmored = keyPair['privateKeyArmored'];
+            $scope.publicKeyArmored = keyPair['publicKeyArmored'];
 
             $scope.workerFinished = true;
             $scope.workerSuccessfull = true;
 
-        };
-        keyGenWorker.onerror = function (error) {
-            $scope.workerFinished = true;
-            $scope.workerError = error;
-
-        };
-
-        var buf = new Uint32Array(1000);
-        window.crypto.getRandomValues(buf);
-
-        var msg = {
-            algorithm: parseInt($scope.algorithm),
-            keyLength: parseInt($scope.keyLength),
-            userId: $scope.userName + "@" + $scope.server,
-            randomByteBuffer: buf
+            $scope.$apply();
+            return;
         }
-        var password = $scope.password;
-        if (password)
-            msg.password = password + "";
-
-        keyGenWorker.postMessage(msg);
     }
 
     var checkProgress = function (apply) {
