@@ -9,10 +9,10 @@
             <p>{{userID}}</p>
 
             <h4>{{'PRIVATE_KEY'|translate}}</h4>
-            <p>{{privateKeyArmored}}</p>
+            <p>{{privateKeyArmored|limitTo:80}}..</p>
 
             <h4>{{'PUBLIC_KEY'|translate}}</h4>
-            <p>{{publicKeyArmored}}</p>
+            <p>{{publicKeyArmored|limitTo:80}}..</p>
 
         </div>
     </div>
