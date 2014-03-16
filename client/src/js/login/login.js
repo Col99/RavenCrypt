@@ -18,7 +18,7 @@ app.controller('LoginCtrl', function($scope, $window, $location, $state, $stateP
             $scope.account = $scope.accounts[0];
             $scope.$apply();
         } else {
-            $state.go("register.credentials");
+            $state.go("register.server");
         }
     });
 
@@ -28,6 +28,6 @@ app.controller('LoginCtrl', function($scope, $window, $location, $state, $stateP
     }
 
     $scope.register = function() {
-      $state.go("register.credentials");
+      $state.go("register.server");
     }
 });

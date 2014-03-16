@@ -42,26 +42,31 @@ var app = angular
                 abstract: true,
                 templateUrl: "partials/register/register.html"
             })
-            .state('register.credentials', {
-                url: "/register",
-                templateUrl: "partials/register/credentials.html",
-                controller: "CredentialsCtrl"
-            })
-            .state('register.importKey', {
-                templateUrl: "partials/register/importKey.html",
-                params: ['userName', 'server'],
-                controller: "ImportKeyCtrl"
-            })
-            .state('register.createKey', {
-                templateUrl: "partials/register/createKey.html",
-                params: ['userName', 'server'],
-                controller: "CreateKeyCtrl"
-            })
-            .state('register.signUp', {
-                templateUrl: "partials/register/signUp.html",
-                params: ['userName', 'server', 'privateKeyArmored', 'publicKeyArmored', 'keyHasPassword'],
-                controller: "SignUpCtrl"
-            })
+                .state('register.server', {
+                    url: "/register",
+                    templateUrl: "partials/register/server.html",
+                    controller: "RegisterServerCtrl"
+                })
+                .state('register.name', {
+                    templateUrl: "partials/register/name.html",
+                    params: ['server'],
+                    controller: "RegisterNameCtrl"
+                })
+                .state('register.importKey', {
+                    templateUrl: "partials/register/importKey.html",
+                    params: ['userName', 'server'],
+                    controller: "RegisterImportKeyCtrl"
+                })
+                .state('register.createKey', {
+                    templateUrl: "partials/register/createKey.html",
+                    params: ['userName', 'server'],
+                    controller: "RegisterCreateKeyCtrl"
+                })
+                .state('register.signUp', {
+                    templateUrl: "partials/register/signUp.html",
+                    params: ['userName', 'server', 'privateKeyArmored', 'publicKeyArmored', 'keyHasPassword'],
+                    controller: "RegisterSignUpCtrl"
+                })
     });
 
 //TODO maybe, move this in an external config file

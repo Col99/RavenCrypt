@@ -6,14 +6,14 @@
             <label class="col-lg-4 control-label" for="userName">{{'USER_NAME'|translate}}</label>
             <div class="col-lg-8">
                 <input
-                    id="userName"
-                    ng-model="userName"
-                    name="userName"
-                    pattern="{{userNamePattern}}"
-                    class="form-control"
-                    type="text"
-                    ng-readonly="readOnly">
-                <p>{{'USER_NAME_FORMAT_INFO'|translate}}</p>
+                        id="userName"
+                        ng-model="userName"
+                        name="userName"
+                        pattern="{{userNamePattern}}"
+                        class="form-control"
+                        type="text"
+                        ng-readonly="readOnly">
+                <p>{{'USER_NAME_FORMAT_INFO'|translate}}{{server}}</p>
             </div>
         </div>
 
