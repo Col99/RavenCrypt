@@ -43,7 +43,7 @@ var app = angular
         $stateProvider
             .state('main', {
                 url: "/main/:userID",
-                templateUrl: "partials/main/main.html",
+                templateUrl: "partials/main.html",
                 controller: "MainCtrl"
             })
             .state('login', {
