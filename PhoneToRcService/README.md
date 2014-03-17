@@ -2,7 +2,7 @@
 
 This should be a NodeJS service that bridges the PhoneNrs and RCAddresses.
 
-Its purpose is to put PhonNrs behind RC-Addresses via SMS confirmation.
+Its purpose is to put Phonenumber behind RC-Addresses via SMS confirmation.
 
 ### Info
 

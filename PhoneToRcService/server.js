@@ -22,9 +22,6 @@ var spdy = require('spdy');
 var pjson = require("./package.json");
 config.version = pjson.version;
 
-//crypto libs
-require("./lib/crypto.js")
-
 //small helper library, full of useful JS functions.
 require("./lib/helper.js");
 
@@ -34,13 +31,11 @@ require("./lib/constants.js");
 //load the validation
 require("./lib/validations.js");
 
-//sessionKeys
-require("./lib/session.js");
 //-----------------------------------------------------
 //------------------Server Startup---------------------
 //-----------------------------------------------------
 
-global.logger.info("RavenCrypt Server " + config.version + " Starting...");
+global.logger.info("PhoneToRc Server " + config.version + " Starting...");
 
 //DB Setup
 global.logger.info("Setting up Database Connection..");
@@ -222,7 +217,7 @@ function startServer() {
             workerID = cluster.worker.id + ": ";
 
         global.server.listen(config.web.portHTTPS);
-        global.logger.info(workerID + "RavenCrypt Server Server listening on https://" + config.web.hostname + ":" + config.web.portHTTPS);
+        global.logger.info(workerID + "PhoneToRC Server listening on https://" + config.web.hostname + ":" + config.web.portHTTPS);
 
     } catch (err) {
         global.logger.info("Couldn't start Server:" + err)

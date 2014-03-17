@@ -30,8 +30,11 @@
 /server/logs/
 /server/analytics.json
 
+#PhoneToRcService
+/PhoneToRcService/node_modules/*
+
 #weired unnecessary openpgp keyring config file that creates itself when calling opnenpgp.init().. shouldn't happen anymore but nerveless
 /config
 
 #macos filesystem metafiles
-/*.DS_Store
+*.DS_Store
