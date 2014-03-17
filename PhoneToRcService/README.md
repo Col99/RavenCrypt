@@ -1,6 +1,6 @@
 ## PhoneToRCService
 
-This should be a NodeJS service that bridges the PhoneNrs and RCAddresses.
+This should be a NodeJS service that bridges the PhoneNo and RCAddresses.
 
 Its purpose is to put Phonenumber behind RC-Addresses via SMS confirmation.
 
