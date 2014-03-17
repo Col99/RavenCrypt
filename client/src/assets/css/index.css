@@ -1,8 +1,11 @@
 body {
     background-color: rgba(18, 22, 35, 0.82);
 }
-.white-text {
+.rc-highlighted-text {
     color: #FFFFFF;
+}
+.experimental-text {
+    color: #FF0000;
 }
 .darker-text {
      color: #BBBBBB;
@@ -10,15 +13,15 @@ body {
 .rc-logo-text {
     font-size: large;
 }
-a.white-text:link {
+a.rc-highlighted-text:link {
     color: #BBBBBB;
 }
-a.white-text:visited {
+a.rc-highlighted-text:visited {
     color: #BBBBBB;
 }
-a.white-text:hover {
+a.rc-highlighted-text:hover {
     color: #FFFFFF;
 }
-a.white-text:active {
+a.rc-highlighted-text:active {
     color: #FFFFFF;
 }

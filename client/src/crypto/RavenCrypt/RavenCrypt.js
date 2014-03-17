@@ -87,6 +87,10 @@ var RavenCryptSymmetricKey = function (algorithm, key, iv){
 };
 
 RavenCryptSymmetricKey.prototype.encrypt = function(text){
+    if(typeof text != "string") {
+        text = text + "";
+    }
+
     switch(this.algorithm){
         case "0":
             //AES256
@@ -270,6 +274,9 @@ var RavenCryptAsymmetricPrivateKey = function (privateKeyArmored, passPhrase){
 };
 
 RavenCryptAsymmetricPrivateKey.prototype.sign = function(text){
+    if(typeof text != "string") {
+        text = text + "";
+    }
     return openpgp.signClearMessage(this.parsedPrivateKeys.keys, text);
 };
 
@@ -364,6 +371,10 @@ RavenCryptAsymmetricKeyPair.createRSAKeyPair = function(userIdForPublicKeyServer
 };
 
 RavenCryptAsymmetricKeyPair.createNew = function(openPGPKeyPair, passPhrase){
+
+    if(typeof passPhrase == "undefined"){
+        passPhrase = "";
+    }
 
     var instance = new RavenCryptAsymmetricKeyPair();
 

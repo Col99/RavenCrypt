@@ -58,9 +58,10 @@ app.controller('RegisterCreateKeyCtrl', function ($scope, $window, $location, $s
 
         var userIdForPublicKeyServer = $scope.userName + "@@@" + $scope.server;
 
-        if($scope.password == "") {
-            $scope.password = null;
-        }
+        //this prohibits us from using empty passwords
+//        if($scope.password == "") {
+//            $scope.password = null;
+//        }
 
         openpgp.generateKeyPair($scope.algorithm, $scope.keyLength, userIdForPublicKeyServer,  $scope.password, callback);
 

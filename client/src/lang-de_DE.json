@@ -9,6 +9,8 @@
     "REGISTER_STEP_CREATE_KEY": "Algorithmus auswählen",
     "REGISTER_STEP_GENERATE_KEY": "Schlüssel generieren",
     "REGISTER_STEP_IMPORT": "Schlüssel importieren",
-    "REGISTER_STEP_FINISH": "Registrierung abschließen",
-    "USER_NAME_FORMAT_INFO": "Hieraus wird BenutzerName@@@"
+    "REGISTER_STEP_SIGN_UP": "Am Server registrieren",
+    "REGISTER_STEP_CONFIRM": "Registrierung bestätigen",
+    "USER_NAME_FORMAT_INFO": "Hieraus wird BenutzerName@@@",
+    "EXPERIMENTAL": "experimentell"
 }

@@ -34,12 +34,16 @@
     "REGISTER_STEP_CREATE_KEY": "Choose Encryption Algorithm",
     "REGISTER_STEP_GENERATE_KEY": "Generating key",
     "REGISTER_STEP_IMPORT": "Import PGP Key Pair",
-    "REGISTER_STEP_FINISH": "Finish Registration",
+    "REGISTER_STEP_SIGN_UP": "Sign Up with Server",
+    "REGISTER_STEP_CONFIRM": "Confirm Registration",
     "SERVER_UNABLE_TO_GET_DATA": "Unable to get data from this Server! \n- check your internet connection \n- check if the server is up and you can reach it via https \n- check if the server is running ravencrypt",
     "SERVER_ERROR": "Server Reported an internal error, try again!",
     "SERVER_OVERLOAD" : "Server reported overload, try again!",
     "NO_PGP_KEY": "You did not enter a valid PGP Key!",
     "INCORRECT_USER_NAME_FORMAT": "You can only use A-Z, whole Numbers and _ in a User Name.",
     "INCORRECT_SERVER_FORMAT": "Server Format incorrect. You need to enter a correct domain. You can however use a non-standard https port.",
-    "BAD_REQUEST": "Bad Request."
+    "BAD_REQUEST": "Bad Request.",
+    "CONFIRM_CODE": "Confirm Code",
+    "CONFIRM": "Confirm",
+    "EXPERIMENTAL": "experimental"
 }

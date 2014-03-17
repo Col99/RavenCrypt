@@ -1,10 +1,11 @@
 'use strict';
 
-app.controller('RegisterSignUpCtrl', function ($scope, $window, $location, $state, $stateParams, $ydnDB) {
+app.controller('ConfirmCtrl', function ($scope, $window, $location, $state, $stateParams, $ydnDB) {
     $scope.userName = $stateParams.userName;
     $scope.server = $stateParams.server;
+    $scope.userID = $scope.userName + "@@@" + $scope.server;
     $scope.keyHasPassword = $stateParams.keyHasPassword;
-
+    $scope.confirmCode = "";
     $scope.privateKeyArmored = $.trim($stateParams.privateKeyArmored);
     $scope.publicKeyArmored = $.trim($stateParams.publicKeyArmored);
 
@@ -24,30 +25,48 @@ app.controller('RegisterSignUpCtrl', function ($scope, $window, $location, $stat
         $scope.showError = true;
     }
 
+    $scope.Captcha = 'data:image/png;base64,' + $stateParams.confirmCodeImage;
+
     $scope.register = function () {
-        var requestUrl = "https://" + $scope.server + "/register";
+        var requestUrl = "https://" + $scope.server + "/register/confirm";
+
+
+        if(isNaN($scope.Code)) {
+            $scope.showError = false;
+            $scope.error = "CODE_IS_NOT_A_NUMBER";
+            return;
+        }
 
         $scope.showError = false;
         $scope.showPending = true;
+
+        var privateKey = rcKeyPair.privateKey;
+        var signedCode = privateKey.sign($scope.Code);
 
         $.ajax({
             type: 'POST',
             url: requestUrl,
             data: JSON.stringify({
                 user: $scope.userName,
-                publicKey: $scope.publicKeyArmored,
-                keyID: $scope.keyID
+                activationCode: signedCode
             }),
             success: function (data) {
                 $scope.showPending = false;
 
-                $state.transitionTo("register.confirm", {
-                    server: $scope.server,
-                    userName: $scope.userName,
-                    privateKeyArmored: $scope.privateKeyArmored,
-                    publicKeyArmored: $scope.publicKeyArmored,
-                    confirmCodeImage: data
+                $ydnDB.put('account', {
+                    user: $scope.userName,
+                    server: $scope.server
                 });
+                $ydnDB.put('userKeyPair', {
+                    user: $scope.userName,
+                    server: $scope.server,
+                    id: $scope.keyID,
+                    privateKeyArmored: $scope.privateKeyArmored,
+                    publicKeyArmored: $scope.publicKeyArmored
+                });
+
+                $state.transitionTo("login");
+                $scope.$apply();
             },
             error: function(jqXHR){
                 $scope.showPending = false;

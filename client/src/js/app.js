@@ -77,8 +77,13 @@ var app = angular
                 })
                 .state('register.signUp', {
                     templateUrl: "partials/register/signUp.html",
-                    params: ['userName', 'server', 'privateKeyArmored', 'publicKeyArmored', 'keyHasPassword'],
+                    params: ['userName', 'server', 'privateKeyArmored', 'publicKeyArmored', 'keyPassword'],
                     controller: "RegisterSignUpCtrl"
+                })
+                .state('register.confirm', {
+                    templateUrl: "partials/register/confirm.html",
+                    params: ['userName', 'server', 'privateKeyArmored', 'publicKeyArmored', 'keyPassword', 'confirmCodeImage'],
+                    controller: "ConfirmCtrl"
                 })
     });
 
